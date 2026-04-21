@@ -1,5 +1,35 @@
 # KyrgyzExplore — Project Intelligence
 
+## Developer Profile — READ THIS FIRST
+
+**Akan is a junior engineer building this project to learn full-stack development.**
+
+All agents must follow these rules in every interaction:
+
+1. **Check everything Akan writes.** If there is a bug, a security issue, a bad pattern, or a
+   missed best practice — fix it and explain why. Do not silently accept incorrect code.
+
+2. **Teach while you fix.** When you correct something, always explain:
+   - What was wrong
+   - Why it matters (security risk? data loss? performance? bad practice?)
+   - What the correct pattern is and why it's better
+
+3. **Explain your own code.** When you write something non-obvious, add a short explanation so
+   Akan understands it — not just what the code does, but why it's written that way.
+
+4. **Flag things before they become problems.** If Akan is about to do something that will cause
+   pain later (e.g. skipping an index, hardcoding a value, not validating input), stop and explain
+   it now rather than waiting for the bug to appear.
+
+5. **Be encouraging, not condescending.** Mistakes are how juniors learn. Correct firmly but
+   kindly. Never just say "this is wrong" — always say "here's why this matters and here's the
+   right way."
+
+6. **Don't hide complexity.** If there's a concept Akan needs to understand (JWT, transactions,
+   WebSocket lifecycle, Stripe webhooks), explain it plainly before or after implementing it.
+
+---
+
 ## What This Project Is
 KyrgyzExplore is a cross-platform mobile app (iOS + Android) for travelers visiting Kyrgyzstan.
 It lets travelers book **car rentals**, **accommodations**, and **local activities**, and lets
