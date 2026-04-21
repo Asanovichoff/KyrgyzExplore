@@ -1,0 +1,42 @@
+# ── Secrets ───────────────────────────────────────────────────
+.env
+*.env.local
+**/.env
+
+# ── macOS ─────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ── Java / Maven ──────────────────────────────────────────────
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+
+# ── Flutter / Dart ────────────────────────────────────────────
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/build/
+frontend/.packages
+frontend/pubspec.lock   # keep if you want reproducible builds; remove for libraries
+
+# ── IDE ────────────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Test outputs ──────────────────────────────────────────────
+coverage/
+*.lcov
+
+# ── Docker local volumes (if mapped to a local path) ──────────
+infrastructure/volumes/

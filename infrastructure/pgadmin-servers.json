@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "KyrgyzExplore Local",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "kyrgyzexplore",
+      "Username": "kyrgyz",
+      "SSLMode": "prefer",
+      "PassFile": "/dev/null"
+    }
+  }
+}
