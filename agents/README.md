@@ -147,7 +147,7 @@ Fullstack Agent (reads HANDOFF.md)
 
 | Feature | Database | Backend | Frontend | Status |
 |---------|----------|---------|----------|--------|
-| Auth (email + OAuth) | ⬜ | ⬜ | ⬜ | Not started |
+| Auth (email/password) | ✅ | ✅ | ⬜ | 🟡 In progress |
 | Listing CRUD | ⬜ | ⬜ | ⬜ | Not started |
 | Photo upload | ⬜ | ⬜ | ⬜ | Not started |
 | Search & Discovery | ⬜ | ⬜ | ⬜ | Not started |
