@@ -8,10 +8,12 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -86,6 +88,40 @@ public class ListingService {
     public Page<ListingResponse> findByHost(UUID hostId, Pageable pageable) {
         return listingRepository.findByHostIdAndDeletedAtIsNull(hostId, pageable)
                 .map(this::toResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ListingResponse> search(
+            double lat, double lon, double radiusKm,
+            ListingType type, BigDecimal minPrice, BigDecimal maxPrice,
+            String city, Integer minGuests,
+            int page, int size) {
+
+        double radiusMeters = radiusKm * 1000.0;
+        String typeStr = type != null ? type.name() : null;
+        // Cap page size at 50 — prevents clients from requesting huge result sets
+        PageRequest pr = PageRequest.of(page, Math.min(size, 50));
+
+        return listingRepository
+                .searchListings(lat, lon, radiusMeters, typeStr, minPrice, maxPrice, city, minGuests, pr)
+                .map(listing -> {
+                    double dist = haversineDistanceKm(lat, lon,
+                            listing.getLocation().getY(),
+                            listing.getLocation().getX());
+                    double rounded = Math.round(dist * 10.0) / 10.0;
+                    return toResponse(listing).toBuilder().distanceKm(rounded).build();
+                });
+    }
+
+    // Haversine formula — accurate to ~0.3% for distances under 500 km
+    private static double haversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {
+        final double R = 6371.0;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                 * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
     public PresignResponse generateImageUploadUrl(UUID listingId, UUID hostId) {

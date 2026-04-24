@@ -1,5 +1,6 @@
 package com.kyrgyzexplore.listing.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.kyrgyzexplore.listing.ListingType;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class ListingResponse {
     private UUID id;
     private UUID hostId;
@@ -31,4 +32,8 @@ public class ListingResponse {
     private List<ListingImageResponse> images;
     private Instant createdAt;
     private Instant updatedAt;
+
+    // Only present in search results — null (and omitted from JSON) on single-listing fetches
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Double distanceKm;
 }

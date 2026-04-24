@@ -14,13 +14,16 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/listings")
 @RequiredArgsConstructor
+@Validated
 public class ListingController {
 
     private final ListingService listingService;
@@ -63,6 +66,22 @@ public class ListingController {
             @PathVariable UUID id,
             @AuthenticationPrincipal User currentUser) {
         listingService.softDelete(id, currentUser.getId());
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<Page<ListingResponse>> search(
+            @RequestParam @NotNull Double lat,
+            @RequestParam @NotNull Double lon,
+            @RequestParam(defaultValue = "50") Double radiusKm,
+            @RequestParam(required = false) ListingType type,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) Integer minGuests,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return ApiResponse.ok(
+                listingService.search(lat, lon, radiusKm, type, minPrice, maxPrice, city, minGuests, page, size));
     }
 
     @GetMapping("/host/my")
