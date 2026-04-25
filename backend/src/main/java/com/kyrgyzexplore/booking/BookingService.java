@@ -46,7 +46,7 @@ public class BookingService {
                     "This listing accommodates at most " + listing.getMaxGuests() + " guests");
         }
 
-        if (bookingRepository.existsConflict(req.getListingId(), req.getCheckInDate(), req.getCheckOutDate())) {
+        if (bookingRepository.existsConflict(req.getListingId(), req.getCheckInDate(), req.getCheckOutDate(), Instant.now())) {
             throw AppException.badRequest("BOOKING_CONFLICT", "These dates are already booked");
         }
 
@@ -61,6 +61,7 @@ public class BookingService {
                 .numberOfGuests(req.getNumberOfGuests())
                 .totalPrice(totalPrice)
                 .guestMessage(req.getGuestMessage())
+                .expiresAt(Instant.now().plus(24, ChronoUnit.HOURS))
                 .build();
 
         return toResponse(bookingRepository.save(booking));
@@ -170,6 +171,7 @@ public class BookingService {
                 .confirmedAt(b.getConfirmedAt())
                 .rejectedAt(b.getRejectedAt())
                 .cancelledAt(b.getCancelledAt())
+                .expiresAt(b.getExpiresAt())
                 .createdAt(b.getCreatedAt())
                 .updatedAt(b.getUpdatedAt())
                 .build();

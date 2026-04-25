@@ -51,4 +51,7 @@ public class Booking extends BaseEntity {
     private Instant confirmedAt;
     private Instant rejectedAt;
     private Instant cancelledAt;
+
+    // Set at creation for PENDING bookings; null for all other statuses.
+    private Instant expiresAt;
 }

@@ -26,6 +26,7 @@ public class BookingResponse {
     private Instant confirmedAt;
     private Instant rejectedAt;
     private Instant cancelledAt;
+    private Instant expiresAt;
     private Instant createdAt;
     private Instant updatedAt;
 }
