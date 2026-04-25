@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -47,6 +48,8 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
         @Param("checkOut")  LocalDate checkOut,
         @Param("now")       Instant now
     );
+
+    Optional<Booking> findByStripePaymentIntentId(String stripePaymentIntentId);
 
     /**
      * Bulk-cancels all PENDING bookings whose expiry window has passed.

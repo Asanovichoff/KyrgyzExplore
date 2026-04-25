@@ -54,4 +54,9 @@ public class Booking extends BaseEntity {
 
     // Set at creation for PENDING bookings; null for all other statuses.
     private Instant expiresAt;
+
+    @Column(length = 255)
+    private String stripePaymentIntentId;  // set when traveler initiates payment
+
+    private Instant paidAt;               // set by Stripe webhook on success
 }

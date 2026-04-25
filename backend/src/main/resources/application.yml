@@ -57,6 +57,12 @@ management:
     health:
       show-details: when-authorized
 
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY:}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+  publishable-key: ${STRIPE_PUBLISHABLE_KEY:}
+  platform-fee-percent: 10
+
 logging:
   level:
     com.kyrgyzexplore: DEBUG

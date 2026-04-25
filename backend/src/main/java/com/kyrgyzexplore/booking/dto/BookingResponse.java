@@ -27,6 +27,8 @@ public class BookingResponse {
     private Instant rejectedAt;
     private Instant cancelledAt;
     private Instant expiresAt;
+    private String stripePaymentIntentId;
+    private Instant paidAt;
     private Instant createdAt;
     private Instant updatedAt;
 }

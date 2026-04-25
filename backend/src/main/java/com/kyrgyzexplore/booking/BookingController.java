@@ -4,6 +4,7 @@ import com.kyrgyzexplore.booking.dto.BookingResponse;
 import com.kyrgyzexplore.booking.dto.CreateBookingRequest;
 import com.kyrgyzexplore.booking.dto.RejectBookingRequest;
 import com.kyrgyzexplore.common.dto.ApiResponse;
+import com.kyrgyzexplore.payment.dto.PaymentIntentResponse;
 import com.kyrgyzexplore.user.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -80,5 +81,13 @@ public class BookingController {
             @PathVariable UUID id,
             @AuthenticationPrincipal User currentUser) {
         return ApiResponse.ok(bookingService.cancel(id, currentUser.getId()));
+    }
+
+    @PostMapping("/{id}/pay")
+    @PreAuthorize("hasRole('TRAVELER')")
+    public ApiResponse<PaymentIntentResponse> pay(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User currentUser) {
+        return ApiResponse.ok(bookingService.initiatePayment(id, currentUser.getId()));
     }
 }

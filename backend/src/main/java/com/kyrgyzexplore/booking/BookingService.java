@@ -5,6 +5,10 @@ import com.kyrgyzexplore.booking.dto.CreateBookingRequest;
 import com.kyrgyzexplore.common.exception.AppException;
 import com.kyrgyzexplore.listing.Listing;
 import com.kyrgyzexplore.listing.ListingRepository;
+import com.kyrgyzexplore.payment.PaymentService;
+import com.kyrgyzexplore.payment.dto.PaymentIntentResponse;
+import com.kyrgyzexplore.config.StripeConfig;
+import com.stripe.model.PaymentIntent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +26,8 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final ListingRepository listingRepository;
+    private final PaymentService paymentService;
+    private final StripeConfig stripeConfig;
 
     @Transactional
     public BookingResponse create(UUID travelerId, CreateBookingRequest req) {
@@ -122,6 +128,46 @@ public class BookingService {
                 .map(this::toResponse);
     }
 
+    @Transactional
+    public PaymentIntentResponse initiatePayment(UUID bookingId, UUID travelerId) {
+        Booking booking = loadBookingOrThrow(bookingId);
+
+        if (!booking.getTravelerId().equals(travelerId)) {
+            throw AppException.forbidden("BOOKING_FORBIDDEN", "Only the traveler can pay for this booking");
+        }
+        assertStatus(booking, BookingStatus.CONFIRMED, "Only CONFIRMED bookings can be paid");
+
+        // Idempotent — if a PaymentIntent was already created (e.g. traveler hit pay twice),
+        // retrieve the existing one rather than creating a duplicate charge.
+        if (booking.getStripePaymentIntentId() != null) {
+            try {
+                PaymentIntent existing = PaymentIntent.retrieve(booking.getStripePaymentIntentId());
+                return new PaymentIntentResponse(existing.getClientSecret(),
+                        stripeConfig.getPublishableKey(), booking.getTotalPrice());
+            } catch (com.stripe.exception.StripeException e) {
+                throw AppException.internalServerError("STRIPE_ERROR", "Could not retrieve existing payment");
+            }
+        }
+
+        PaymentIntent intent = paymentService.createPaymentIntent(booking.getTotalPrice(), bookingId);
+        booking.setStripePaymentIntentId(intent.getId());
+        bookingRepository.save(booking);
+
+        return new PaymentIntentResponse(intent.getClientSecret(),
+                stripeConfig.getPublishableKey(), booking.getTotalPrice());
+    }
+
+    @Transactional
+    public void markPaid(String paymentIntentId) {
+        Booking booking = bookingRepository.findByStripePaymentIntentId(paymentIntentId)
+                .orElseThrow(() -> AppException.notFound("BOOKING_NOT_FOUND",
+                        "No booking found for payment intent " + paymentIntentId));
+
+        booking.setStatus(BookingStatus.PAID);
+        booking.setPaidAt(Instant.now());
+        bookingRepository.save(booking);
+    }
+
     // ---- private helpers ----
 
     private Booking loadBookingOrThrow(UUID id) {
@@ -172,6 +218,8 @@ public class BookingService {
                 .rejectedAt(b.getRejectedAt())
                 .cancelledAt(b.getCancelledAt())
                 .expiresAt(b.getExpiresAt())
+                .stripePaymentIntentId(b.getStripePaymentIntentId())
+                .paidAt(b.getPaidAt())
                 .createdAt(b.getCreatedAt())
                 .updatedAt(b.getUpdatedAt())
                 .build();
