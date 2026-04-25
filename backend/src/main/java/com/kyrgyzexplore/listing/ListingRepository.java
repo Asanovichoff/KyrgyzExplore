@@ -1,8 +1,10 @@
 package com.kyrgyzexplore.listing;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -17,6 +19,15 @@ public interface ListingRepository extends JpaRepository<Listing, UUID> {
     Page<Listing> findByHostIdAndDeletedAtIsNull(UUID hostId, Pageable pageable);
 
     Optional<Listing> findByIdAndDeletedAtIsNull(UUID id);
+
+    /**
+     * Used exclusively during booking creation. The PESSIMISTIC_WRITE lock issues
+     * a SELECT ... FOR UPDATE, serialising concurrent booking attempts on the same
+     * listing so the conflict check and the insert are atomic.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT l FROM Listing l WHERE l.id = :id AND l.deletedAt IS NULL")
+    Optional<Listing> findByIdForBooking(@Param("id") UUID id);
 
     /**
      * Proximity search with optional filters.
