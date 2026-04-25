@@ -97,7 +97,11 @@ public class ListingService {
             String city, Integer minGuests,
             int page, int size) {
 
-        double radiusMeters = radiusKm * 1000.0;
+        // Hard cap: beyond ~100 km the planar <-> sort diverges from true spherical
+        // distance enough to produce wrong ordering. Controller validates this too,
+        // but guard here in case the method is called internally.
+        double effectiveRadiusKm = Math.min(radiusKm, 100.0);
+        double radiusMeters = effectiveRadiusKm * 1000.0;
         String typeStr = type != null ? type.name() : null;
         // Cap page size at 50 — prevents clients from requesting huge result sets
         PageRequest pr = PageRequest.of(page, Math.min(size, 50));

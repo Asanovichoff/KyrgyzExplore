@@ -4,6 +4,8 @@ import com.kyrgyzexplore.common.dto.ApiResponse;
 import com.kyrgyzexplore.listing.dto.*;
 import com.kyrgyzexplore.user.User;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -72,7 +74,7 @@ public class ListingController {
     public ApiResponse<Page<ListingResponse>> search(
             @RequestParam @NotNull Double lat,
             @RequestParam @NotNull Double lon,
-            @RequestParam(defaultValue = "50") Double radiusKm,
+            @RequestParam(defaultValue = "50") @DecimalMin("0.1") @DecimalMax("100.0") Double radiusKm,
             @RequestParam(required = false) ListingType type,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
