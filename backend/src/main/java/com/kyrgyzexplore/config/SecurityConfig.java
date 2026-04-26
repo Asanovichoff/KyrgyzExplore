@@ -53,6 +53,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login",
                                  "/api/v1/auth/refresh").permitAll()
                 .requestMatchers("/api/v1/webhooks/stripe").permitAll()
+                // WebSocket HTTP upgrade must be open — JWT auth happens inside the STOMP CONNECT frame,
+                // not in the HTTP handshake. See WebSocketSecurityConfig for the JWT validation logic.
+                .requestMatchers("/ws/**").permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

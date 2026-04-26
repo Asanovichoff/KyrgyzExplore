@@ -5,6 +5,8 @@ import com.kyrgyzexplore.booking.dto.CreateBookingRequest;
 import com.kyrgyzexplore.common.exception.AppException;
 import com.kyrgyzexplore.listing.Listing;
 import com.kyrgyzexplore.listing.ListingRepository;
+import com.kyrgyzexplore.notification.NotificationService;
+import com.kyrgyzexplore.notification.NotificationType;
 import com.kyrgyzexplore.payment.PaymentService;
 import com.kyrgyzexplore.payment.dto.PaymentIntentResponse;
 import com.kyrgyzexplore.config.StripeConfig;
@@ -28,6 +30,7 @@ public class BookingService {
     private final ListingRepository listingRepository;
     private final PaymentService paymentService;
     private final StripeConfig stripeConfig;
+    private final NotificationService notificationService;
 
     @Transactional
     public BookingResponse create(UUID travelerId, CreateBookingRequest req) {
@@ -80,7 +83,12 @@ public class BookingService {
 
         booking.setStatus(BookingStatus.CONFIRMED);
         booking.setConfirmedAt(Instant.now());
-        return toResponse(bookingRepository.save(booking));
+        BookingResponse response = toResponse(bookingRepository.save(booking));
+
+        notificationService.notify(booking.getTravelerId(), NotificationType.BOOKING_CONFIRMED,
+                "Booking confirmed", "Your booking has been confirmed by the host.", bookingId);
+
+        return response;
     }
 
     @Transactional
@@ -91,7 +99,12 @@ public class BookingService {
         booking.setStatus(BookingStatus.REJECTED);
         booking.setRejectedAt(Instant.now());
         booking.setRejectionReason(reason);
-        return toResponse(bookingRepository.save(booking));
+        BookingResponse response = toResponse(bookingRepository.save(booking));
+
+        notificationService.notify(booking.getTravelerId(), NotificationType.BOOKING_REJECTED,
+                "Booking declined", "Unfortunately your booking request was declined.", bookingId);
+
+        return response;
     }
 
     @Transactional
@@ -106,7 +119,22 @@ public class BookingService {
 
         booking.setStatus(BookingStatus.CANCELLED);
         booking.setCancelledAt(Instant.now());
-        return toResponse(bookingRepository.save(booking));
+        BookingResponse response = toResponse(bookingRepository.save(booking));
+
+        // Notify the party who did NOT cancel
+        Listing listing = listingRepository.findByIdAndDeletedAtIsNull(booking.getListingId())
+                .orElse(null);
+        if (listing != null) {
+            boolean callerIsTraveler = booking.getTravelerId().equals(callerId);
+            UUID otherParty = callerIsTraveler ? listing.getHostId() : booking.getTravelerId();
+            String msg = callerIsTraveler
+                    ? "The traveler has cancelled their booking."
+                    : "The host has cancelled your booking.";
+            notificationService.notify(otherParty, NotificationType.BOOKING_CANCELLED,
+                    "Booking cancelled", msg, bookingId);
+        }
+
+        return response;
     }
 
     @Transactional(readOnly = true)
@@ -166,6 +194,14 @@ public class BookingService {
         booking.setStatus(BookingStatus.PAID);
         booking.setPaidAt(Instant.now());
         bookingRepository.save(booking);
+
+        notificationService.notify(booking.getTravelerId(), NotificationType.BOOKING_PAID,
+                "Payment received", "Your payment was successful. Enjoy your trip!", booking.getId());
+
+        listingRepository.findByIdAndDeletedAtIsNull(booking.getListingId()).ifPresent(listing ->
+            notificationService.notify(listing.getHostId(), NotificationType.BOOKING_PAID,
+                    "Payment received", "A traveler has completed payment for their booking.", booking.getId())
+        );
     }
 
     // ---- private helpers ----
