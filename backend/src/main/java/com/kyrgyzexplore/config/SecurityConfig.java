@@ -56,6 +56,10 @@ public class SecurityConfig {
                 // WebSocket HTTP upgrade must be open — JWT auth happens inside the STOMP CONNECT frame,
                 // not in the HTTP handshake. See WebSocketSecurityConfig for the JWT validation logic.
                 .requestMatchers("/ws/**").permitAll()
+                // Public read-only endpoints — no login needed to browse listings or reviews
+                .requestMatchers(org.springframework.http.HttpMethod.GET,
+                        "/api/v1/listings", "/api/v1/listings/**",
+                        "/api/v1/reviews/listing/**").permitAll()
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
