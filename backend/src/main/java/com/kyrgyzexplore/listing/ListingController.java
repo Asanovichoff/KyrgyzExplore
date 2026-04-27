@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @RestController
@@ -80,10 +81,14 @@ public class ListingController {
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) String city,
             @RequestParam(required = false) Integer minGuests,
+            @RequestParam(required = false) LocalDate checkIn,
+            @RequestParam(required = false) LocalDate checkOut,
+            @RequestParam(defaultValue = "distance") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         return ApiResponse.ok(
-                listingService.search(lat, lon, radiusKm, type, minPrice, maxPrice, city, minGuests, page, size));
+                listingService.search(lat, lon, radiusKm, type, minPrice, maxPrice,
+                        city, minGuests, checkIn, checkOut, sort, page, size));
     }
 
     @GetMapping("/host/my")

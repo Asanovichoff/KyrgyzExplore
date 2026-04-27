@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,6 +96,8 @@ public class ListingService {
             double lat, double lon, double radiusKm,
             ListingType type, BigDecimal minPrice, BigDecimal maxPrice,
             String city, Integer minGuests,
+            LocalDate checkIn, LocalDate checkOut,
+            String sort,
             int page, int size) {
 
         // Hard cap: beyond ~100 km the planar <-> sort diverges from true spherical
@@ -105,9 +108,14 @@ public class ListingService {
         String typeStr = type != null ? type.name() : null;
         // Cap page size at 50 — prevents clients from requesting huge result sets
         PageRequest pr = PageRequest.of(page, Math.min(size, 50));
+        // Unknown sort values fall back to distance — safe, no SQL injection risk
+        // since :sort is a parameterized value, but normalising avoids surprises.
+        String resolvedSort = List.of("price_asc", "price_desc", "rating", "distance")
+                .contains(sort) ? sort : "distance";
 
         return listingRepository
-                .searchListings(lat, lon, radiusMeters, typeStr, minPrice, maxPrice, city, minGuests, pr)
+                .searchListings(lat, lon, radiusMeters, typeStr, minPrice, maxPrice,
+                        city, minGuests, checkIn, checkOut, resolvedSort, pr)
                 .map(listing -> {
                     double dist = haversineDistanceKm(lat, lon,
                             listing.getLocation().getY(),

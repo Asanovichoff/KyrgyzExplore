@@ -5,11 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +19,39 @@ import java.util.UUID;
 public interface ListingRepository extends JpaRepository<Listing, UUID> {
 
     Page<Listing> findByHostIdAndDeletedAtIsNull(UUID hostId, Pageable pageable);
+
+    /**
+     * Atomically recomputes averageRating and reviewCount for a listing from the
+     * reviews table in a single SQL round-trip.
+     *
+     * WHY native query instead of JPQL?
+     * JPQL UPDATE cannot reference another table in the SET clause. The native
+     * subquery computes AVG + COUNT together so there's no gap between reading
+     * the reviews and writing the listing — no race condition possible.
+     *
+     * WHY cast AVG to numeric(3,2)?
+     * AVG(smallint) returns numeric with arbitrary precision in PostgreSQL.
+     * Casting to numeric(3,2) matches the column definition on the listing
+     * (precision=3, scale=2) and avoids a type mismatch error.
+     *
+     * When all reviews are deleted, the subquery returns NULL for avg_rating and
+     * 0 for cnt, which correctly resets the listing stats.
+     */
+    @Modifying
+    @Query(value = """
+        UPDATE listings
+        SET average_rating = sub.avg_rating,
+            review_count   = sub.cnt,
+            updated_at     = NOW()
+        FROM (
+            SELECT AVG(rating)::numeric(3,2) AS avg_rating,
+                   COUNT(*)::int             AS cnt
+            FROM reviews
+            WHERE listing_id = :listingId
+        ) sub
+        WHERE id = :listingId
+        """, nativeQuery = true)
+    void recalculateRating(@Param("listingId") UUID listingId);
 
     Optional<Listing> findByIdAndDeletedAtIsNull(UUID id);
 
@@ -67,7 +102,21 @@ public interface ListingRepository extends JpaRepository<Listing, UUID> {
               AND (:maxPrice IS NULL OR l.price_per_unit <= :maxPrice)
               AND (:city IS NULL OR LOWER(l.city) = LOWER(:city))
               AND (:minGuests IS NULL OR l.max_guests >= :minGuests)
-            ORDER BY l.location <-> ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)
+              AND (
+                    CAST(:checkIn AS date) IS NULL OR CAST(:checkOut AS date) IS NULL
+                    OR NOT EXISTS (
+                        SELECT 1 FROM bookings b
+                        WHERE b.listing_id = l.id
+                          AND b.status IN ('CONFIRMED', 'PAID')
+                          AND b.check_in_date  < CAST(:checkOut AS date)
+                          AND b.check_out_date > CAST(:checkIn AS date)
+                    )
+                  )
+            ORDER BY
+                CASE WHEN :sort = 'price_asc'  THEN l.price_per_unit ELSE NULL END ASC  NULLS LAST,
+                CASE WHEN :sort = 'price_desc' THEN l.price_per_unit ELSE NULL END DESC NULLS LAST,
+                CASE WHEN :sort = 'rating'     THEN l.average_rating ELSE NULL END DESC NULLS LAST,
+                l.location <-> ST_SetSRID(ST_MakePoint(:lon, :lat), 4326) ASC
             """,
         countQuery = """
             SELECT COUNT(*)
@@ -84,6 +133,16 @@ public interface ListingRepository extends JpaRepository<Listing, UUID> {
               AND (:maxPrice IS NULL OR l.price_per_unit <= :maxPrice)
               AND (:city IS NULL OR LOWER(l.city) = LOWER(:city))
               AND (:minGuests IS NULL OR l.max_guests >= :minGuests)
+              AND (
+                    CAST(:checkIn AS date) IS NULL OR CAST(:checkOut AS date) IS NULL
+                    OR NOT EXISTS (
+                        SELECT 1 FROM bookings b
+                        WHERE b.listing_id = l.id
+                          AND b.status IN ('CONFIRMED', 'PAID')
+                          AND b.check_in_date  < CAST(:checkOut AS date)
+                          AND b.check_out_date > CAST(:checkIn AS date)
+                    )
+                  )
             """,
         nativeQuery = true
     )
@@ -96,6 +155,9 @@ public interface ListingRepository extends JpaRepository<Listing, UUID> {
         @Param("maxPrice") BigDecimal maxPrice,
         @Param("city") String city,
         @Param("minGuests") Integer minGuests,
+        @Param("checkIn") LocalDate checkIn,
+        @Param("checkOut") LocalDate checkOut,
+        @Param("sort") String sort,
         Pageable pageable
     );
 }
