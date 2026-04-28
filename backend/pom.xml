@@ -133,6 +133,13 @@
 			<artifactId>stripe-java</artifactId>
 			<version>27.1.0</version>
 		</dependency>
+
+		<!-- Firebase Admin SDK — FCM push notifications -->
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.3.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

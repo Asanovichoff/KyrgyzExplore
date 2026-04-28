@@ -2,6 +2,7 @@ package com.kyrgyzexplore.notification;
 
 import com.kyrgyzexplore.common.exception.AppException;
 import com.kyrgyzexplore.notification.dto.NotificationResponse;
+import com.kyrgyzexplore.push.FcmService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final FcmService fcmService;
 
     /**
      * Persists a notification to the DB and pushes it in real-time to the recipient's
@@ -61,6 +63,10 @@ public class NotificationService {
             // The notification is safely persisted — user will see it on next REST poll.
             log.warn("Failed to push real-time notification to user {}: {}", recipientId, e.getMessage());
         }
+
+        // FCM push — reaches the user even when the app is closed.
+        // FcmService is a no-op when Firebase credentials are not configured.
+        fcmService.sendToUser(recipientId, title, body, type, bookingId);
     }
 
     @Transactional(readOnly = true)
