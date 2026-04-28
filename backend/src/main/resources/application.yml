@@ -67,6 +67,11 @@ firebase:
   project-id: ${FIREBASE_PROJECT_ID:REPLACE_ME}
   service-account-json-base64: ${FIREBASE_SERVICE_ACCOUNT_JSON_BASE64:REPLACE_ME}
 
+sendgrid:
+  api-key: ${SENDGRID_API_KEY:SG.REPLACE_ME}
+  from-address: ${EMAIL_FROM_ADDRESS:noreply@kyrgyzexplore.com}
+  from-name: ${EMAIL_FROM_NAME:KyrgyzExplore}
+
 logging:
   level:
     com.kyrgyzexplore: DEBUG

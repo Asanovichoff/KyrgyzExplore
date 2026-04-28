@@ -4,6 +4,7 @@ import com.kyrgyzexplore.auth.dto.AuthResponse;
 import com.kyrgyzexplore.auth.dto.LoginRequest;
 import com.kyrgyzexplore.auth.dto.RegisterRequest;
 import com.kyrgyzexplore.common.exception.AppException;
+import com.kyrgyzexplore.email.EmailService;
 import com.kyrgyzexplore.user.User;
 import com.kyrgyzexplore.user.UserRepository;
 import com.kyrgyzexplore.user.dto.UserResponse;
@@ -25,6 +26,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Transactional
     public AuthResponse register(RegisterRequest req) {
@@ -42,6 +44,7 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+        emailService.sendWelcome(user.getId());
         return buildAuthResponse(user);
     }
 

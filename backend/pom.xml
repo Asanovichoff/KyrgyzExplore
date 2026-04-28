@@ -140,6 +140,13 @@
 			<artifactId>firebase-admin</artifactId>
 			<version>9.3.0</version>
 		</dependency>
+
+		<!-- SendGrid — transactional email delivery -->
+		<dependency>
+			<groupId>com.sendgrid</groupId>
+			<artifactId>sendgrid-java</artifactId>
+			<version>4.10.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>

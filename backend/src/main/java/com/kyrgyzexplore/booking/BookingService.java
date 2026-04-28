@@ -3,6 +3,7 @@ package com.kyrgyzexplore.booking;
 import com.kyrgyzexplore.booking.dto.BookingResponse;
 import com.kyrgyzexplore.booking.dto.CreateBookingRequest;
 import com.kyrgyzexplore.common.exception.AppException;
+import com.kyrgyzexplore.email.EmailService;
 import com.kyrgyzexplore.listing.Listing;
 import com.kyrgyzexplore.listing.ListingRepository;
 import com.kyrgyzexplore.notification.NotificationService;
@@ -31,6 +32,7 @@ public class BookingService {
     private final PaymentService paymentService;
     private final StripeConfig stripeConfig;
     private final NotificationService notificationService;
+    private final EmailService emailService;
 
     @Transactional
     public BookingResponse create(UUID travelerId, CreateBookingRequest req) {
@@ -87,6 +89,7 @@ public class BookingService {
 
         notificationService.notify(booking.getTravelerId(), NotificationType.BOOKING_CONFIRMED,
                 "Booking confirmed", "Your booking has been confirmed by the host.", bookingId);
+        emailService.sendBookingConfirmed(bookingId);
 
         return response;
     }
@@ -103,6 +106,7 @@ public class BookingService {
 
         notificationService.notify(booking.getTravelerId(), NotificationType.BOOKING_REJECTED,
                 "Booking declined", "Unfortunately your booking request was declined.", bookingId);
+        emailService.sendBookingRejected(bookingId);
 
         return response;
     }
@@ -132,6 +136,7 @@ public class BookingService {
                     : "The host has cancelled your booking.";
             notificationService.notify(otherParty, NotificationType.BOOKING_CANCELLED,
                     "Booking cancelled", msg, bookingId);
+            emailService.sendBookingCancelled(bookingId, callerId);
         }
 
         return response;
@@ -197,11 +202,13 @@ public class BookingService {
 
         notificationService.notify(booking.getTravelerId(), NotificationType.BOOKING_PAID,
                 "Payment received", "Your payment was successful. Enjoy your trip!", booking.getId());
+        emailService.sendPaymentReceiptTraveler(booking.getId());
 
-        listingRepository.findByIdAndDeletedAtIsNull(booking.getListingId()).ifPresent(listing ->
+        listingRepository.findByIdAndDeletedAtIsNull(booking.getListingId()).ifPresent(listing -> {
             notificationService.notify(listing.getHostId(), NotificationType.BOOKING_PAID,
-                    "Payment received", "A traveler has completed payment for their booking.", booking.getId())
-        );
+                    "Payment received", "A traveler has completed payment for their booking.", booking.getId());
+            emailService.sendNewPaidBookingHost(booking.getId());
+        });
     }
 
     // ---- private helpers ----
