@@ -95,6 +95,16 @@ public class ReviewService {
                 });
     }
 
+    @Transactional(readOnly = true)
+    public Page<ReviewResponse> getByHost(UUID hostId, Pageable pageable) {
+        return reviewRepository.findByHostId(hostId, pageable)
+                .map(r -> {
+                    User traveler = userRepository.findById(r.getTravelerId())
+                            .orElseThrow(() -> AppException.notFound("USER_NOT_FOUND", "User not found"));
+                    return toResponse(r, traveler);
+                });
+    }
+
     private ReviewResponse toResponse(Review r, User traveler) {
         return ReviewResponse.builder()
                 .id(r.getId())

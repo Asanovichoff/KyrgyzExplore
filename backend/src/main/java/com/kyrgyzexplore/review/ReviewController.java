@@ -46,6 +46,13 @@ public class ReviewController {
         return ApiResponse.ok(reviewService.getByTraveler(currentUser.getId(), pageable));
     }
 
+    @GetMapping("/host/{hostId}")
+    public ApiResponse<Page<ReviewResponse>> getByHost(
+            @PathVariable UUID hostId,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ApiResponse.ok(reviewService.getByHost(hostId, pageable));
+    }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('TRAVELER')")
     public ApiResponse<Void> delete(

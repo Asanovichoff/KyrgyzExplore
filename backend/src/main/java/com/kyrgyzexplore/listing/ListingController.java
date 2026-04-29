@@ -112,6 +112,16 @@ public class ListingController {
         return ApiResponse.ok(listingService.confirmImage(id, req.getS3Key(), currentUser.getId()));
     }
 
+    @DeleteMapping("/{id}/images/{imageId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('HOST')")
+    public void deleteImage(
+            @PathVariable UUID id,
+            @PathVariable UUID imageId,
+            @AuthenticationPrincipal User currentUser) {
+        listingService.deleteImage(id, imageId, currentUser.getId());
+    }
+
     /**
      * Public endpoint — no auth required.
      * GET /api/v1/listings/{id}/availability?year=2026&month=7

@@ -79,6 +79,19 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     );
 
     /**
+     * Returns a page of PAID bookings for listings owned by the given host.
+     * Used by PayoutController to render payout history.
+     */
+    @Query("""
+        SELECT b FROM Booking b
+        JOIN com.kyrgyzexplore.listing.Listing l ON l.id = b.listingId
+        WHERE l.hostId = :hostId
+          AND b.status = com.kyrgyzexplore.booking.BookingStatus.PAID
+        ORDER BY b.paidAt DESC
+        """)
+    Page<Booking> findPaidByHostId(@Param("hostId") UUID hostId, Pageable pageable);
+
+    /**
      * Bulk-cancels all PENDING bookings whose expiry window has passed.
      * Called by BookingExpiryJob every 15 minutes.
      * Returns the number of rows updated for logging.

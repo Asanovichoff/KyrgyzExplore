@@ -3,6 +3,7 @@ package com.kyrgyzexplore.listing;
 import com.kyrgyzexplore.common.exception.AppException;
 import com.kyrgyzexplore.listing.dto.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ListingService {
 
     private final ListingRepository listingRepository;
@@ -154,6 +156,19 @@ public class ListingService {
                 .build();
 
         return toImageResponse(listingImageRepository.save(image));
+    }
+
+    @Transactional
+    public void deleteImage(UUID listingId, UUID imageId, UUID hostId) {
+        loadAndVerifyOwner(listingId, hostId);
+        ListingImage image = listingImageRepository.findByIdAndListing_Id(imageId, listingId)
+                .orElseThrow(() -> AppException.notFound("IMAGE_NOT_FOUND", "Image not found"));
+        listingImageRepository.delete(image);
+        try {
+            s3Service.deleteObject(image.getS3Key());
+        } catch (Exception e) {
+            log.warn("S3 delete failed for key {}: {}", image.getS3Key(), e.getMessage());
+        }
     }
 
     private Listing loadAndVerifyOwner(UUID id, UUID hostId) {
