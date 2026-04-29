@@ -24,14 +24,16 @@ class AuthRepository {
 
   Future<UserModel> login(LoginRequest req) async {
     final response = await _dio.post('/auth/login', data: req.toJson());
-    final data = response.data as Map<String, dynamic>;
+    // Backend wraps all responses: { "success": true, "data": { ... } }
+    // We must unwrap ['data'] to reach the actual AuthResponse payload.
+    final data = response.data['data'] as Map<String, dynamic>;
     await _saveTokens(TokenPair.fromJson(data));
     return UserModel.fromJson(data['user'] as Map<String, dynamic>);
   }
 
   Future<UserModel> register(RegisterRequest req) async {
     final response = await _dio.post('/auth/register', data: req.toJson());
-    final data = response.data as Map<String, dynamic>;
+    final data = response.data['data'] as Map<String, dynamic>;
     await _saveTokens(TokenPair.fromJson(data));
     return UserModel.fromJson(data['user'] as Map<String, dynamic>);
   }
@@ -53,7 +55,7 @@ class AuthRepository {
     final token = await _storage.read(key: _kAccessToken);
     if (token == null) return null;
     final response = await _dio.get('/users/me');
-    return UserModel.fromJson(response.data as Map<String, dynamic>);
+    return UserModel.fromJson(response.data['data'] as Map<String, dynamic>);
   }
 
   Future<void> _saveTokens(TokenPair pair) async {
