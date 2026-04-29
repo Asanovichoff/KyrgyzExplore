@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/search_params.dart';
 import '../providers/explore_provider.dart';
@@ -62,9 +63,7 @@ class ExploreScreen extends ConsumerWidget {
                         itemCount: listings.length,
                         itemBuilder: (context, index) => ListingCard(
                           listing: listings[index],
-                          onTap: () {
-                            // Navigate to listing detail — Phase 16
-                          },
+                          onTap: () => context.push('/listings/${listings[index].id}'),
                         ),
                       ),
                     );

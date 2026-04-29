@@ -5,6 +5,7 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/explore/screens/explore_screen.dart';
+import '../../features/listing/screens/listing_detail_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -26,6 +27,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/',              builder: (_, __) => const ExploreScreen()),
       GoRoute(path: '/auth/login',    builder: (_, __) => const LoginScreen()),
       GoRoute(path: '/auth/register', builder: (_, __) => const RegisterScreen()),
+      GoRoute(
+        path: '/listings/:listingId',
+        builder: (_, state) => ListingDetailScreen(
+          listingId: state.pathParameters['listingId']!,
+        ),
+      ),
     ],
   );
 });
