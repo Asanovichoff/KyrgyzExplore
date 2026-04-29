@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../core/theme/app_colors.dart';
 import '../providers/listing_provider.dart';
@@ -201,13 +202,10 @@ class ListingDetailScreen extends ConsumerWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Booking flow — coming in Phase 17'),
-                          ),
-                        );
-                      },
+                      onPressed: () => context.push(
+                        '/listings/$listingId/book',
+                        extra: listing,
+                      ),
                       child: const Text('Book Now'),
                     ),
                   ),

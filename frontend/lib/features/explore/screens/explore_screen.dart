@@ -26,11 +26,14 @@ class ExploreScreen extends ConsumerWidget {
         title: const Text('Explore'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.receipt_long_outlined),
+            tooltip: 'My Bookings',
+            onPressed: () => context.push('/bookings'),
+          ),
+          IconButton(
             icon: const Icon(Icons.tune),
             tooltip: 'Filters',
-            onPressed: () {
-              // Full filter sheet — Phase 16
-            },
+            onPressed: () {},
           ),
         ],
       ),
