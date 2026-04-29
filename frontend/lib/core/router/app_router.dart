@@ -19,9 +19,6 @@ class _HomePlaceholder extends StatelessWidget {
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
-  // Listening to auth state so the router refreshes on login/logout.
-  final authNotifier = ref.read(authStateProvider.notifier);
-
   return GoRouter(
     initialLocation: '/',
     refreshListenable: _AuthNotifierListenable(ref),
