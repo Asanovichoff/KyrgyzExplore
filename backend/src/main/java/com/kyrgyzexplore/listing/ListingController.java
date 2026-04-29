@@ -6,6 +6,8 @@ import com.kyrgyzexplore.user.User;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -30,6 +33,7 @@ import java.util.UUID;
 public class ListingController {
 
     private final ListingService listingService;
+    private final AvailabilityService availabilityService;
 
     @PostMapping("/images/presign")
     @PreAuthorize("hasRole('HOST')")
@@ -106,6 +110,34 @@ public class ListingController {
             @RequestBody @Valid ConfirmImageRequest req,
             @AuthenticationPrincipal User currentUser) {
         return ApiResponse.ok(listingService.confirmImage(id, req.getS3Key(), currentUser.getId()));
+    }
+
+    /**
+     * Public endpoint — no auth required.
+     * GET /api/v1/listings/{id}/availability?year=2026&month=7
+     * Returns all blocked dates for the given month (booking-derived + host manual blocks).
+     */
+    @GetMapping("/{id}/availability")
+    public ApiResponse<AvailabilityResponse> getAvailability(
+            @PathVariable UUID id,
+            @RequestParam int year,
+            @RequestParam @Min(1) @Max(12) int month) {
+        return ApiResponse.ok(availabilityService.getBlockedDates(id, year, month));
+    }
+
+    /**
+     * Host-only endpoint.
+     * PUT /api/v1/listings/{id}/availability
+     * Adds or removes manual blocks. Returns how many dates were actually changed.
+     */
+    @PutMapping("/{id}/availability")
+    @PreAuthorize("hasRole('HOST')")
+    public ApiResponse<Map<String, Integer>> updateAvailability(
+            @PathVariable UUID id,
+            @RequestBody @Valid UpdateAvailabilityRequest req,
+            @AuthenticationPrincipal User currentUser) {
+        int updated = availabilityService.updateAvailability(id, currentUser.getId(), req);
+        return ApiResponse.ok(Map.of("updated", updated));
     }
 
     // ---- inner request DTOs (only used by this controller) ----

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -50,6 +51,32 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     );
 
     Optional<Booking> findByStripePaymentIntentId(String stripePaymentIntentId);
+
+    /**
+     * Returns all CONFIRMED or PAID bookings for a listing whose date range
+     * overlaps [startDate, endDate). Used by AvailabilityService to compute
+     * which days are blocked by existing bookings.
+     *
+     * WHY only CONFIRMED and PAID?
+     * PENDING bookings have not been accepted by the host yet and expire after
+     * 24 hours. Showing PENDING bookings as blocked on the availability calendar
+     * would make dates look unavailable before the host has even accepted —
+     * a confusing and misleading experience for travelers.
+     */
+    @Query("""
+        SELECT b FROM Booking b
+        WHERE b.listingId = :listingId
+          AND b.status IN (
+              com.kyrgyzexplore.booking.BookingStatus.CONFIRMED,
+              com.kyrgyzexplore.booking.BookingStatus.PAID)
+          AND b.checkInDate  < :endDate
+          AND b.checkOutDate > :startDate
+        """)
+    List<Booking> findConfirmedOrPaidOverlapping(
+        @Param("listingId")  UUID listingId,
+        @Param("startDate")  LocalDate startDate,
+        @Param("endDate")    LocalDate endDate
+    );
 
     /**
      * Bulk-cancels all PENDING bookings whose expiry window has passed.
