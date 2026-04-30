@@ -27,12 +27,18 @@ class ExploreScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Explore'),
         actions: [
-          if (user?.isHost == true)
+          if (user?.isHost == true) ...[
+            IconButton(
+              icon: const Icon(Icons.home_work_outlined),
+              tooltip: 'My Listings',
+              onPressed: () => context.push('/host/listings'),
+            ),
             IconButton(
               icon: const Icon(Icons.dashboard_outlined),
               tooltip: 'Manage Bookings',
               onPressed: () => context.push('/host/bookings'),
             ),
+          ],
           IconButton(
             icon: const Icon(Icons.receipt_long_outlined),
             tooltip: 'My Bookings',

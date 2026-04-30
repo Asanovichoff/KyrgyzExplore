@@ -29,6 +29,7 @@ class ListingModel {
     required this.maxGuests,
     required this.reviewCount,
     required this.images,
+    this.address,
     this.latitude,
     this.longitude,
     this.city,
@@ -56,6 +57,7 @@ class ListingModel {
         city: json['city'] as String?,
         country: json['country'] as String?,
         averageRating: (json['averageRating'] as num?)?.toDouble(),
+        address: json['address'] as String?,
         distanceKm: (json['distanceKm'] as num?)?.toDouble(),
       );
 
@@ -69,6 +71,7 @@ class ListingModel {
   final int maxGuests;
   final int reviewCount;
   final List<ListingImageModel> images;
+  final String? address;
   final double? latitude;
   final double? longitude;
   final String? city;

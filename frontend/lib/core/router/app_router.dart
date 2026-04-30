@@ -9,6 +9,8 @@ import '../../features/booking/screens/booking_request_screen.dart';
 import '../../features/booking/screens/host_bookings_screen.dart';
 import '../../features/booking/screens/my_bookings_screen.dart';
 import '../../features/explore/models/listing_model.dart';
+import '../../features/host/screens/create_edit_listing_screen.dart';
+import '../../features/host/screens/host_listings_screen.dart';
 import '../../features/listing/screens/listing_detail_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -50,6 +52,20 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/host/bookings',
         builder: (_, __) => const HostBookingsScreen(),
+      ),
+      GoRoute(
+        path: '/host/listings',
+        builder: (_, __) => const HostListingsScreen(),
+      ),
+      GoRoute(
+        path: '/host/listings/new',
+        builder: (_, __) => const CreateEditListingScreen(),
+      ),
+      GoRoute(
+        path: '/host/listings/:id/edit',
+        builder: (_, state) => CreateEditListingScreen(
+          listing: state.extra as ListingModel,
+        ),
       ),
     ],
   );
