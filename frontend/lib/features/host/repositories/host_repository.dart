@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_client.dart';
@@ -99,12 +100,9 @@ class HostRepository {
   Future<void> uploadToS3(String uploadUrl, List<int> bytes) async {
     await _s3Dio.put(
       uploadUrl,
-      data: Stream.fromIterable([bytes]),
+      data: Uint8List.fromList(bytes),
       options: Options(
-        headers: {
-          'Content-Type': 'image/jpeg',
-          'Content-Length': bytes.length,
-        },
+        headers: {'Content-Type': 'image/jpeg'},
       ),
     );
   }
