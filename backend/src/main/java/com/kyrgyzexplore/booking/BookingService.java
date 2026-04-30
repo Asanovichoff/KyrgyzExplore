@@ -245,9 +245,14 @@ public class BookingService {
     }
 
     private BookingResponse toResponse(Booking b) {
+        String listingTitle = listingRepository
+                .findByIdAndDeletedAtIsNull(b.getListingId())
+                .map(Listing::getTitle)
+                .orElse(null);
         return BookingResponse.builder()
                 .id(b.getId())
                 .listingId(b.getListingId())
+                .listingTitle(listingTitle)
                 .travelerId(b.getTravelerId())
                 .status(b.getStatus())
                 .checkInDate(b.getCheckInDate())

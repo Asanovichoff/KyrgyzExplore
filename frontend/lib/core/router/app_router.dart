@@ -6,6 +6,7 @@ import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/explore/screens/explore_screen.dart';
 import '../../features/booking/screens/booking_request_screen.dart';
+import '../../features/booking/screens/host_bookings_screen.dart';
 import '../../features/booking/screens/my_bookings_screen.dart';
 import '../../features/explore/models/listing_model.dart';
 import '../../features/listing/screens/listing_detail_screen.dart';
@@ -45,6 +46,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/bookings',
         builder: (_, __) => const MyBookingsScreen(),
+      ),
+      GoRoute(
+        path: '/host/bookings',
+        builder: (_, __) => const HostBookingsScreen(),
       ),
     ],
   );

@@ -45,6 +45,30 @@ class BookingRepository {
     await _dio.post('/bookings/$bookingId/cancel');
   }
 
+  Future<List<BookingModel>> hostBookings({int page = 0, int size = 10}) async {
+    final res = await _dio.get(
+      '/bookings/host',
+      queryParameters: {'page': page, 'size': size},
+    );
+    final content = res.data['data']['content'] as List<dynamic>;
+    return content
+        .map((e) => BookingModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<BookingModel> confirm(String bookingId) async {
+    final res = await _dio.post('/bookings/$bookingId/confirm');
+    return BookingModel.fromJson(res.data['data'] as Map<String, dynamic>);
+  }
+
+  Future<BookingModel> reject(String bookingId, String reason) async {
+    final res = await _dio.post(
+      '/bookings/$bookingId/reject',
+      data: {'reason': reason},
+    );
+    return BookingModel.fromJson(res.data['data'] as Map<String, dynamic>);
+  }
+
   // Formats a DateTime to "yyyy-MM-dd" as expected by the backend LocalDate.
   String _fmt(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';

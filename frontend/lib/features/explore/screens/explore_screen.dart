@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../features/auth/providers/auth_provider.dart';
 import '../models/search_params.dart';
 import '../providers/explore_provider.dart';
 import '../widgets/listing_card.dart';
@@ -20,11 +21,18 @@ class ExploreScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final params  = ref.watch(searchParamsProvider);
     final results = ref.watch(searchResultsProvider);
+    final user    = ref.watch(authStateProvider).valueOrNull;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Explore'),
         actions: [
+          if (user?.isHost == true)
+            IconButton(
+              icon: const Icon(Icons.dashboard_outlined),
+              tooltip: 'Manage Bookings',
+              onPressed: () => context.push('/host/bookings'),
+            ),
           IconButton(
             icon: const Icon(Icons.receipt_long_outlined),
             tooltip: 'My Bookings',

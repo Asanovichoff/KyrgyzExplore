@@ -14,6 +14,7 @@ import java.util.UUID;
 public class BookingResponse {
     private UUID id;
     private UUID listingId;
+    private String listingTitle;
     private UUID travelerId;
     private BookingStatus status;
     private LocalDate checkInDate;

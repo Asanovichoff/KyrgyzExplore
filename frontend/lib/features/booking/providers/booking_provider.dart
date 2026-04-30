@@ -5,3 +5,7 @@ import '../repositories/booking_repository.dart';
 final myBookingsProvider = FutureProvider.autoDispose<List<BookingModel>>(
   (ref) => ref.read(bookingRepositoryProvider).myBookings(),
 );
+
+final hostBookingsProvider = FutureProvider.autoDispose<List<BookingModel>>(
+  (ref) => ref.read(bookingRepositoryProvider).hostBookings(),
+);
