@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../explore/models/listing_model.dart';
 import '../providers/host_provider.dart';
 import '../repositories/host_repository.dart';
+import 'location_picker_screen.dart';
 
 class CreateEditListingScreen extends ConsumerStatefulWidget {
   const CreateEditListingScreen({super.key, this.listing});
@@ -22,7 +23,6 @@ class _CreateEditListingScreenState
     extends ConsumerState<CreateEditListingScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Text controllers
   late final TextEditingController _title;
   late final TextEditingController _description;
   late final TextEditingController _price;
@@ -30,19 +30,14 @@ class _CreateEditListingScreenState
   late final TextEditingController _maxGuests;
   late final TextEditingController _address;
   late final TextEditingController _city;
-  late final TextEditingController _lat;
-  late final TextEditingController _lon;
 
   String _type = 'HOUSE';
+  LatLng? _selectedLocation;
   bool _saving = false;
-  bool _locating = false;
   String? _error;
 
-  // Images from the backend (edit mode)
   List<ListingImageModel> _existingImages = [];
-  // Images picked locally, pending upload
   final List<XFile> _pendingImages = [];
-  // Upload progress per pending image index
   final Map<int, bool> _uploading = {};
 
   @override
@@ -61,18 +56,16 @@ class _CreateEditListingScreenState
             : '');
     _address = TextEditingController(text: l?.address ?? '');
     _city = TextEditingController(text: l?.city ?? '');
-    _lat = TextEditingController(
-        text: l?.latitude?.toStringAsFixed(6) ?? '');
-    _lon = TextEditingController(
-        text: l?.longitude?.toStringAsFixed(6) ?? '');
+    if (l?.latitude != null && l?.longitude != null) {
+      _selectedLocation = LatLng(l!.latitude!, l.longitude!);
+    }
     _existingImages = List.from(l?.images ?? []);
   }
 
   @override
   void dispose() {
     for (final c in [
-      _title, _description, _price, _currency,
-      _maxGuests, _address, _city, _lat, _lon,
+      _title, _description, _price, _currency, _maxGuests, _address, _city,
     ]) {
       c.dispose();
     }
@@ -81,34 +74,13 @@ class _CreateEditListingScreenState
 
   bool get _isEdit => widget.listing != null;
 
-  Future<void> _useMyLocation() async {
-    setState(() => _locating = true);
-    try {
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.deniedForever ||
-          permission == LocationPermission.denied) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permission denied')),
-          );
-        }
-        return;
-      }
-      final pos = await Geolocator.getCurrentPosition();
-      _lat.text = pos.latitude.toStringAsFixed(6);
-      _lon.text = pos.longitude.toStringAsFixed(6);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not get location: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _locating = false);
-    }
+  Future<void> _pickLocation() async {
+    final result = await Navigator.of(context).push<LatLng>(
+      MaterialPageRoute(
+        builder: (_) => LocationPickerScreen(initial: _selectedLocation),
+      ),
+    );
+    if (result != null) setState(() => _selectedLocation = result);
   }
 
   Future<void> _pickImage() async {
@@ -146,14 +118,18 @@ class _CreateEditListingScreenState
       setState(() => _existingImages.remove(img));
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Could not delete image: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Could not delete image: $e')));
       }
     }
   }
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    if (_selectedLocation == null) {
+      setState(() => _error = 'Please pick a location on the map.');
+      return;
+    }
 
     setState(() {
       _saving = true;
@@ -166,8 +142,8 @@ class _CreateEditListingScreenState
         title: _title.text.trim(),
         description: _description.text.trim(),
         pricePerUnit: double.parse(_price.text.trim()),
-        latitude: double.parse(_lat.text.trim()),
-        longitude: double.parse(_lon.text.trim()),
+        latitude: _selectedLocation!.latitude,
+        longitude: _selectedLocation!.longitude,
         address: _address.text.trim(),
         city: _city.text.trim(),
         currency: _currency.text.trim().isEmpty ? 'KGS' : _currency.text.trim(),
@@ -196,8 +172,7 @@ class _CreateEditListingScreenState
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content:
-              Text(_isEdit ? 'Listing updated!' : 'Listing created!'),
+          content: Text(_isEdit ? 'Listing updated!' : 'Listing created!'),
         ),
       );
     } catch (e) {
@@ -220,14 +195,23 @@ class _CreateEditListingScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Type selector ──────────────────────────────────────
+              // ── Type ──────────────────────────────────────────────
               const _SectionLabel('Type'),
               const SizedBox(height: 8),
               SegmentedButton<String>(
                 segments: const [
-                  ButtonSegment(value: 'HOUSE', label: Text('House'), icon: Icon(Icons.house_outlined)),
-                  ButtonSegment(value: 'CAR', label: Text('Car'), icon: Icon(Icons.directions_car_outlined)),
-                  ButtonSegment(value: 'ACTIVITY', label: Text('Activity'), icon: Icon(Icons.hiking_outlined)),
+                  ButtonSegment(
+                      value: 'HOUSE',
+                      label: Text('House'),
+                      icon: Icon(Icons.house_outlined)),
+                  ButtonSegment(
+                      value: 'CAR',
+                      label: Text('Car'),
+                      icon: Icon(Icons.directions_car_outlined)),
+                  ButtonSegment(
+                      value: 'ACTIVITY',
+                      label: Text('Activity'),
+                      icon: Icon(Icons.hiking_outlined)),
                 ],
                 selected: {_type},
                 onSelectionChanged: (s) => setState(() => _type = s.first),
@@ -235,14 +219,10 @@ class _CreateEditListingScreenState
 
               const SizedBox(height: 20),
 
-              // ── Basic info ─────────────────────────────────────────
+              // ── Basic info ────────────────────────────────────────
               const _SectionLabel('Basic info'),
               const SizedBox(height: 8),
-              _Field(
-                controller: _title,
-                label: 'Title',
-                validator: _required,
-              ),
+              _Field(controller: _title, label: 'Title', validator: _required),
               const SizedBox(height: 12),
               _Field(
                 controller: _description,
@@ -253,7 +233,7 @@ class _CreateEditListingScreenState
 
               const SizedBox(height: 20),
 
-              // ── Pricing ────────────────────────────────────────────
+              // ── Pricing ───────────────────────────────────────────
               const _SectionLabel('Pricing'),
               const SizedBox(height: 8),
               Row(
@@ -269,10 +249,7 @@ class _CreateEditListingScreenState
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _Field(
-                      controller: _currency,
-                      label: 'Currency',
-                    ),
+                    child: _Field(controller: _currency, label: 'Currency'),
                   ),
                 ],
               ),
@@ -285,7 +262,7 @@ class _CreateEditListingScreenState
 
               const SizedBox(height: 20),
 
-              // ── Location ───────────────────────────────────────────
+              // ── Location ──────────────────────────────────────────
               const _SectionLabel('Location'),
               const SizedBox(height: 8),
               _Field(
@@ -300,45 +277,54 @@ class _CreateEditListingScreenState
                 validator: _required,
               ),
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _Field(
-                      controller: _lat,
-                      label: 'Latitude',
-                      keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true, signed: true),
-                      validator: _requiredNumber,
+
+              // Map picker tile
+              InkWell(
+                onTap: _pickLocation,
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: _selectedLocation != null ? kTeal : kGrey,
                     ),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _Field(
-                      controller: _lon,
-                      label: 'Longitude',
-                      keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true, signed: true),
-                      validator: _requiredNumber,
-                    ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.map_outlined,
+                        color: _selectedLocation != null ? kTeal : kGrey,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _selectedLocation == null
+                            ? const Text(
+                                'Tap to pick location on map',
+                                style: TextStyle(color: kGrey),
+                              )
+                            : Text(
+                                '${_selectedLocation!.latitude.toStringAsFixed(5)}, '
+                                '${_selectedLocation!.longitude.toStringAsFixed(5)}',
+                                style: const TextStyle(
+                                    color: kDark,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                      ),
+                      Icon(
+                        Icons.chevron_right,
+                        color: _selectedLocation != null ? kTeal : kGrey,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              TextButton.icon(
-                onPressed: _locating ? null : _useMyLocation,
-                icon: _locating
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.my_location, size: 18),
-                label: const Text('Use my location'),
+                ),
               ),
 
               const SizedBox(height: 20),
 
-              // ── Photos ─────────────────────────────────────────────
+              // ── Photos ────────────────────────────────────────────
               const _SectionLabel('Photos'),
               const SizedBox(height: 8),
               _PhotoStrip(
@@ -353,7 +339,7 @@ class _CreateEditListingScreenState
 
               const SizedBox(height: 24),
 
-              // ── Error ──────────────────────────────────────────────
+              // ── Error ─────────────────────────────────────────────
               if (_error != null) ...[
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -371,7 +357,7 @@ class _CreateEditListingScreenState
                 const SizedBox(height: 16),
               ],
 
-              // ── Save button ────────────────────────────────────────
+              // ── Save ──────────────────────────────────────────────
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -404,7 +390,7 @@ class _CreateEditListingScreenState
   }
 }
 
-// ── Small helper widgets ──────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel(this.text);
@@ -472,14 +458,12 @@ class _PhotoStrip extends StatelessWidget {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          // Existing images from backend
           ...existingImages.map(
             (img) => _ImageTile(
-              child: Image.network(img.url, fit: BoxFit.cover),
               onDelete: () => onDeleteExisting(img),
+              child: Image.network(img.url, fit: BoxFit.cover),
             ),
           ),
-          // Locally picked images
           ...List.generate(pendingImages.length, (i) {
             return _ImageTile(
               loading: uploading[i] == true,
@@ -496,7 +480,6 @@ class _PhotoStrip extends StatelessWidget {
               ),
             );
           }),
-          // Add button
           GestureDetector(
             onTap: onAdd,
             child: Container(
