@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../explore/models/listing_model.dart';
 import '../providers/host_provider.dart';
 import '../repositories/host_repository.dart';
-import 'location_picker_screen.dart';
 
 class CreateEditListingScreen extends ConsumerStatefulWidget {
   const CreateEditListingScreen({super.key, this.listing});
@@ -30,10 +29,12 @@ class _CreateEditListingScreenState
   late final TextEditingController _maxGuests;
   late final TextEditingController _address;
   late final TextEditingController _city;
+  late final TextEditingController _lat;
+  late final TextEditingController _lon;
 
   String _type = 'HOUSE';
-  LatLng? _selectedLocation;
   bool _saving = false;
+  bool _locating = false;
   String? _error;
 
   List<ListingImageModel> _existingImages = [];
@@ -56,16 +57,18 @@ class _CreateEditListingScreenState
             : '');
     _address = TextEditingController(text: l?.address ?? '');
     _city = TextEditingController(text: l?.city ?? '');
-    if (l?.latitude != null && l?.longitude != null) {
-      _selectedLocation = LatLng(l!.latitude!, l.longitude!);
-    }
+    _lat = TextEditingController(
+        text: l?.latitude?.toStringAsFixed(6) ?? '');
+    _lon = TextEditingController(
+        text: l?.longitude?.toStringAsFixed(6) ?? '');
     _existingImages = List.from(l?.images ?? []);
   }
 
   @override
   void dispose() {
     for (final c in [
-      _title, _description, _price, _currency, _maxGuests, _address, _city,
+      _title, _description, _price, _currency,
+      _maxGuests, _address, _city, _lat, _lon,
     ]) {
       c.dispose();
     }
@@ -74,13 +77,36 @@ class _CreateEditListingScreenState
 
   bool get _isEdit => widget.listing != null;
 
-  Future<void> _pickLocation() async {
-    final result = await Navigator.of(context).push<LatLng>(
-      MaterialPageRoute(
-        builder: (_) => LocationPickerScreen(initial: _selectedLocation),
-      ),
-    );
-    if (result != null) setState(() => _selectedLocation = result);
+  Future<void> _useMyLocation() async {
+    setState(() => _locating = true);
+    try {
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.deniedForever ||
+          permission == LocationPermission.denied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permission denied')),
+          );
+        }
+        return;
+      }
+      final pos = await Geolocator.getCurrentPosition();
+      setState(() {
+        _lat.text = pos.latitude.toStringAsFixed(6);
+        _lon.text = pos.longitude.toStringAsFixed(6);
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not get location: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
   }
 
   Future<void> _pickImage() async {
@@ -126,10 +152,6 @@ class _CreateEditListingScreenState
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedLocation == null) {
-      setState(() => _error = 'Please pick a location on the map.');
-      return;
-    }
 
     setState(() {
       _saving = true;
@@ -142,8 +164,8 @@ class _CreateEditListingScreenState
         title: _title.text.trim(),
         description: _description.text.trim(),
         pricePerUnit: double.parse(_price.text.trim()),
-        latitude: _selectedLocation!.latitude,
-        longitude: _selectedLocation!.longitude,
+        latitude: double.parse(_lat.text.trim()),
+        longitude: double.parse(_lon.text.trim()),
         address: _address.text.trim(),
         city: _city.text.trim(),
         currency: _currency.text.trim().isEmpty ? 'KGS' : _currency.text.trim(),
@@ -277,49 +299,40 @@ class _CreateEditListingScreenState
                 validator: _required,
               ),
               const SizedBox(height: 12),
-
-              // Map picker tile
-              InkWell(
-                onTap: _pickLocation,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: _selectedLocation != null ? kTeal : kGrey,
+              Row(
+                children: [
+                  Expanded(
+                    child: _Field(
+                      controller: _lat,
+                      label: 'Latitude',
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: true),
+                      validator: _requiredNumber,
                     ),
-                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.map_outlined,
-                        color: _selectedLocation != null ? kTeal : kGrey,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _selectedLocation == null
-                            ? const Text(
-                                'Tap to pick location on map',
-                                style: TextStyle(color: kGrey),
-                              )
-                            : Text(
-                                '${_selectedLocation!.latitude.toStringAsFixed(5)}, '
-                                '${_selectedLocation!.longitude.toStringAsFixed(5)}',
-                                style: const TextStyle(
-                                    color: kDark,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                      ),
-                      Icon(
-                        Icons.chevron_right,
-                        color: _selectedLocation != null ? kTeal : kGrey,
-                      ),
-                    ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _Field(
+                      controller: _lon,
+                      label: 'Longitude',
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: true),
+                      validator: _requiredNumber,
+                    ),
                   ),
-                ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              TextButton.icon(
+                onPressed: _locating ? null : _useMyLocation,
+                icon: _locating
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.my_location, size: 18),
+                label: const Text('Use my location'),
               ),
 
               const SizedBox(height: 20),
@@ -389,8 +402,6 @@ class _CreateEditListingScreenState
     return null;
   }
 }
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 class _SectionLabel extends StatelessWidget {
   const _SectionLabel(this.text);
