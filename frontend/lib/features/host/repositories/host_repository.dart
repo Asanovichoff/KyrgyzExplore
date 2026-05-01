@@ -2,56 +2,12 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_client.dart';
-import '../../explore/models/listing_model.dart';
+import '../../../shared/models/listing_model.dart';
+import '../models/listing_form_models.dart';
 
 final hostRepositoryProvider = Provider<HostRepository>((ref) {
   return HostRepository(dio: ref.read(dioProvider));
 });
-
-class PresignModel {
-  const PresignModel({required this.uploadUrl, required this.s3Key});
-  final String uploadUrl;
-  final String s3Key;
-}
-
-class CreateListingData {
-  const CreateListingData({
-    required this.type,
-    required this.title,
-    required this.description,
-    required this.pricePerUnit,
-    required this.latitude,
-    required this.longitude,
-    required this.address,
-    required this.city,
-    this.currency = 'KGS',
-    this.maxGuests,
-  });
-
-  final String type;
-  final String title;
-  final String description;
-  final double pricePerUnit;
-  final double latitude;
-  final double longitude;
-  final String address;
-  final String city;
-  final String currency;
-  final int? maxGuests;
-
-  Map<String, dynamic> toJson() => {
-        'type': type,
-        'title': title,
-        'description': description,
-        'pricePerUnit': pricePerUnit,
-        'latitude': latitude,
-        'longitude': longitude,
-        'address': address,
-        'city': city,
-        'currency': currency,
-        if (maxGuests != null) 'maxGuests': maxGuests,
-      };
-}
 
 class HostRepository {
   HostRepository({required Dio dio}) : _dio = dio;
@@ -114,4 +70,62 @@ class HostRepository {
   Future<void> deleteImage(String listingId, String imageId) async {
     await _dio.delete('/listings/$listingId/images/$imageId');
   }
+
+  // ── Stripe Connect ─────────────────────────────────────────────────────────
+
+  Future<String> createConnectOnboarding() async {
+    final res = await _dio.post('/users/stripe-connect');
+    return res.data['data']['onboardingUrl'] as String;
+  }
+
+  Future<ConnectStatusModel> getConnectStatus() async {
+    final res = await _dio.get('/users/stripe-connect/status');
+    return ConnectStatusModel.fromJson(
+        res.data['data'] as Map<String, dynamic>);
+  }
+
+  // ── Availability ───────────────────────────────────────────────────────────
+
+  Future<List<String>> getAvailability(
+      String listingId, int year, int month) async {
+    final res = await _dio.get(
+      '/listings/$listingId/availability',
+      queryParameters: {'year': year, 'month': month},
+    );
+    return List<String>.from(
+        res.data['data']['blockedDates'] as List<dynamic>);
+  }
+
+  Future<void> updateAvailability({
+    required String listingId,
+    required List<String> blockedDates,
+    required List<String> unblockedDates,
+  }) async {
+    await _dio.put(
+      '/listings/$listingId/availability',
+      data: {
+        'blockedDates': blockedDates,
+        'unblockedDates': unblockedDates,
+      },
+    );
+  }
+}
+
+class ConnectStatusModel {
+  const ConnectStatusModel({
+    required this.chargesEnabled,
+    required this.detailsSubmitted,
+    this.accountId,
+  });
+
+  factory ConnectStatusModel.fromJson(Map<String, dynamic> json) =>
+      ConnectStatusModel(
+        chargesEnabled: json['chargesEnabled'] as bool,
+        detailsSubmitted: json['detailsSubmitted'] as bool,
+        accountId: json['accountId'] as String?,
+      );
+
+  final bool chargesEnabled;
+  final bool detailsSubmitted;
+  final String? accountId;
 }

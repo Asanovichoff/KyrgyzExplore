@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../explore/models/listing_model.dart';
+import '../../../shared/models/listing_model.dart';
 import '../providers/host_provider.dart';
 import '../repositories/host_repository.dart';
 
@@ -16,7 +16,7 @@ class HostListingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('My Listings')),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/host/listings/new'),
+        onPressed: () => context.pushNamed('host-listings-new'),
         child: const Icon(Icons.add),
       ),
       body: listingsAsync.when(
@@ -51,7 +51,7 @@ class HostListingsScreen extends ConsumerWidget {
                       style: TextStyle(color: kGrey, fontSize: 13)),
                   const SizedBox(height: 24),
                   ElevatedButton.icon(
-                    onPressed: () => context.push('/host/listings/new'),
+                    onPressed: () => context.pushNamed('host-listings-new'),
                     icon: const Icon(Icons.add),
                     label: const Text('Create listing'),
                   ),
@@ -67,8 +67,14 @@ class HostListingsScreen extends ConsumerWidget {
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, i) => _ListingTile(
                 listing: listings[i],
-                onEdit: () => context.push(
-                  '/host/listings/${listings[i].id}/edit',
+                onManageDates: () => context.pushNamed(
+                  'host-availability',
+                  pathParameters: {'id': listings[i].id},
+                  extra: listings[i],
+                ),
+                onEdit: () => context.pushNamed(
+                  'host-listings-edit',
+                  pathParameters: {'id': listings[i].id},
                   extra: listings[i],
                 ),
                 onDelete: () async {
@@ -122,11 +128,13 @@ class HostListingsScreen extends ConsumerWidget {
 class _ListingTile extends StatelessWidget {
   const _ListingTile({
     required this.listing,
+    required this.onManageDates,
     required this.onEdit,
     required this.onDelete,
   });
 
   final ListingModel listing;
+  final VoidCallback onManageDates;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
@@ -159,6 +167,11 @@ class _ListingTile extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            IconButton(
+              icon: const Icon(Icons.calendar_month_outlined, color: kNavy),
+              tooltip: 'Manage dates',
+              onPressed: onManageDates,
+            ),
             IconButton(
               icon: const Icon(Icons.edit_outlined, color: kTeal),
               tooltip: 'Edit',
