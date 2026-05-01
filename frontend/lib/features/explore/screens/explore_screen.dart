@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../models/search_params.dart';
 import '../providers/explore_provider.dart';
+import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/listing_card.dart';
 
 class ExploreScreen extends ConsumerWidget {
@@ -31,23 +32,36 @@ class ExploreScreen extends ConsumerWidget {
             IconButton(
               icon: const Icon(Icons.home_work_outlined),
               tooltip: 'My Listings',
-              onPressed: () => context.push('/host/listings'),
+              onPressed: () => context.pushNamed('host-listings'),
             ),
             IconButton(
               icon: const Icon(Icons.dashboard_outlined),
               tooltip: 'Manage Bookings',
-              onPressed: () => context.push('/host/bookings'),
+              onPressed: () => context.pushNamed('host-bookings'),
             ),
           ],
           IconButton(
             icon: const Icon(Icons.receipt_long_outlined),
             tooltip: 'My Bookings',
-            onPressed: () => context.push('/bookings'),
+            onPressed: () => context.pushNamed('my-bookings'),
           ),
-          IconButton(
-            icon: const Icon(Icons.tune),
-            tooltip: 'Filters',
-            onPressed: () {},
+          Badge(
+            isLabelVisible: params.activeFilterCount > 0,
+            label: Text('${params.activeFilterCount}'),
+            child: IconButton(
+              icon: const Icon(Icons.tune),
+              tooltip: 'Filters',
+              onPressed: () => showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (_) => FilterBottomSheet(
+                  current: params,
+                  onApply: (updated) =>
+                      ref.read(searchParamsProvider.notifier).state = updated,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -61,30 +75,40 @@ class ExploreScreen extends ConsumerWidget {
               loading: () => _LoadingGrid(),
               error: (err, _) => _ErrorView(onRetry: () => ref.invalidate(searchResultsProvider)),
               data: (listings) {
-                if (listings.isEmpty) {
-                  return const _EmptyView();
-                }
-                return LayoutBuilder(
-                  builder: (context, constraints) {
-                    final crossAxisCount = constraints.maxWidth > 600 ? 2 : 1;
-                    return RefreshIndicator(
-                      onRefresh: () async => ref.invalidate(searchResultsProvider),
-                      child: GridView.builder(
-                        padding: const EdgeInsets.all(12),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.78,
+                return RefreshIndicator(
+                  onRefresh: () async => ref.invalidate(searchResultsProvider),
+                  child: listings.isEmpty
+                      ? const CustomScrollView(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          slivers: [
+                            SliverFillRemaining(
+                              hasScrollBody: false,
+                              child: _EmptyView(),
+                            ),
+                          ],
+                        )
+                      : LayoutBuilder(
+                          builder: (context, constraints) {
+                            final crossAxisCount =
+                                constraints.maxWidth > 600 ? 2 : 1;
+                            return GridView.builder(
+                              padding: const EdgeInsets.all(12),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: crossAxisCount,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 0.78,
+                              ),
+                              itemCount: listings.length,
+                              itemBuilder: (context, index) => ListingCard(
+                                listing: listings[index],
+                                onTap: () => context
+                                    .pushNamed('listing-detail', pathParameters: {'listingId': listings[index].id}),
+                              ),
+                            );
+                          },
                         ),
-                        itemCount: listings.length,
-                        itemBuilder: (context, index) => ListingCard(
-                          listing: listings[index],
-                          onTap: () => context.push('/listings/${listings[index].id}'),
-                        ),
-                      ),
-                    );
-                  },
                 );
               },
             ),
