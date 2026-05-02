@@ -18,57 +18,71 @@ class HostBookingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Manage Bookings')),
       body: bookingsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) {
-          String message = 'Could not load bookings';
-          if (err is DioException && err.error is ServerException) {
-            message = (err.error as ServerException).message;
-          } else if (err is DioException && err.error is NetworkException) {
-            message = 'No connection to server';
-          }
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.error_outline, size: 48, color: kGrey),
-                const SizedBox(height: 12),
-                Text(message, textAlign: TextAlign.center),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => ref.invalidate(hostBookingsProvider),
-                  child: const Text('Retry'),
+              loading: () => const Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Loading bookings...'),
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
-        data: (bookings) {
-          if (bookings.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.inbox_outlined, size: 64, color: kGrey),
-                  SizedBox(height: 16),
-                  Text('No bookings yet',
-                      style: TextStyle(color: kGrey, fontSize: 16)),
-                ],
               ),
-            );
-          }
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(hostBookingsProvider),
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: bookings.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, i) => _HostBookingCard(
-                booking: bookings[i],
-                onRefresh: () => ref.invalidate(hostBookingsProvider),
-              ),
-            ),
-          );
-        },
+              error: (err, _) {
+                String message;
+                if (err is DioException && err.error is ServerException) {
+                  message = (err.error as ServerException).message;
+                } else if (err is DioException && err.error is NetworkException) {
+                  message = 'No connection to server';
+                } else {
+                  message = err.toString();
+                }
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline, size: 48, color: kGrey),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Text(message, textAlign: TextAlign.center),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => ref.invalidate(hostBookingsProvider),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              data: (bookings) {
+                if (bookings.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.inbox_outlined, size: 64, color: kGrey),
+                        SizedBox(height: 16),
+                        Text('No bookings yet',
+                            style: TextStyle(color: kGrey, fontSize: 16)),
+                      ],
+                    ),
+                  );
+                }
+                return RefreshIndicator(
+                  onRefresh: () async => ref.invalidate(hostBookingsProvider),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: bookings.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, i) => _HostBookingCard(
+                      booking: bookings[i],
+                      onRefresh: () => ref.invalidate(hostBookingsProvider),
+                    ),
+                  ),
+                );
+              },
       ),
     );
   }

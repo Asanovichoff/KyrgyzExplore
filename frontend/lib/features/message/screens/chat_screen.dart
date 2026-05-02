@@ -27,6 +27,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   bool _loading = true;
   bool _sending = false;
+  bool _connected = false;
   StompClient? _stompClient;
 
   static const _wsBase = String.fromEnvironment(
@@ -65,15 +66,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ? {'Authorization': 'Bearer $token'}
             : {},
         onConnect: _onStompConnected,
-        onDisconnect: (_) {},
-        onWebSocketError: (_) {},
-        onStompError: (_) {},
+        onDisconnect: (_) { if (mounted) setState(() => _connected = false); },
+        onWebSocketError: (_) { if (mounted) setState(() => _connected = false); },
+        onStompError: (_) { if (mounted) setState(() => _connected = false); },
       ),
     );
     _stompClient!.activate();
   }
 
   void _onStompConnected(StompFrame frame) {
+    if (mounted) setState(() => _connected = true);
     _stompClient!.subscribe(
       destination: '/topic/booking/${widget.booking.id}',
       callback: (frame) {
@@ -103,7 +105,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   void _sendMessage() {
     final text = _inputCtrl.text.trim();
-    if (text.isEmpty || _stompClient == null || _sending) return;
+    if (text.isEmpty || !_connected) return;
 
     setState(() => _sending = true);
     // STOMP send is synchronous fire-and-forget. The server echoes the message
@@ -159,7 +161,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           _InputBar(
             controller: _inputCtrl,
             sending: _sending,
-            onSend: _sendMessage,
+            onSend: _connected ? _sendMessage : null,
           ),
         ],
       ),
@@ -249,7 +251,7 @@ class _InputBar extends StatelessWidget {
 
   final TextEditingController controller;
   final bool sending;
-  final VoidCallback onSend;
+  final VoidCallback? onSend;
 
   @override
   Widget build(BuildContext context) {

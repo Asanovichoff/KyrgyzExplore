@@ -52,6 +52,7 @@ class MainShell extends ConsumerWidget {
     // MediaQuery.removePadding strips the bottom safe-area so the inner Scaffold
     // doesn't double-count the home indicator — NavigationBar handles it itself.
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: MediaQuery.removePadding(
