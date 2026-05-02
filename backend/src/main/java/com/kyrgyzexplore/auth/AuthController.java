@@ -1,6 +1,7 @@
 package com.kyrgyzexplore.auth;
 
 import com.kyrgyzexplore.auth.dto.AuthResponse;
+import com.kyrgyzexplore.auth.dto.GoogleLoginRequest;
 import com.kyrgyzexplore.auth.dto.LoginRequest;
 import com.kyrgyzexplore.auth.dto.RefreshRequest;
 import com.kyrgyzexplore.auth.dto.RegisterRequest;
@@ -43,6 +44,12 @@ public class AuthController {
      * @AuthenticationPrincipal injects the currently authenticated User from the
      * SecurityContext — set by JwtAuthFilter. No DB lookup needed here.
      */
+    @PostMapping("/login/google")
+    public ResponseEntity<ApiResponse<AuthResponse>> loginWithGoogle(
+            @Valid @RequestBody GoogleLoginRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok(authService.loginWithGoogle(request.getIdToken())));
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
             @Valid @RequestBody RefreshRequest request,

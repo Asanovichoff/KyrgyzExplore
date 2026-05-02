@@ -33,6 +33,13 @@ class RegisterRequest {
   };
 }
 
+/// Sent to POST /auth/login/google
+class GoogleLoginRequest {
+  const GoogleLoginRequest({required this.idToken});
+  final String idToken;
+  Map<String, dynamic> toJson() => {'idToken': idToken};
+}
+
 /// Access + refresh tokens returned by login / register / refresh
 class TokenPair {
   const TokenPair({required this.accessToken, required this.refreshToken});

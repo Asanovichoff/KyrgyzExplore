@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../../core/api/api_client.dart';
 import '../models/auth_models.dart';
 
@@ -26,6 +27,26 @@ class AuthRepository {
     final response = await _dio.post('/auth/login', data: req.toJson());
     // Backend wraps all responses: { "success": true, "data": { ... } }
     // We must unwrap ['data'] to reach the actual AuthResponse payload.
+    final data = response.data['data'] as Map<String, dynamic>;
+    await _saveTokens(TokenPair.fromJson(data));
+    return UserModel.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
+  // WHY a static instance instead of injecting GoogleSignIn?
+  // GoogleSignIn holds OAuth state (cached accounts, scope grants). A single
+  // long-lived instance avoids redundant sign-in prompts within the same session.
+  static final _googleSignIn = GoogleSignIn();
+
+  Future<UserModel> loginWithGoogle() async {
+    final account = await _googleSignIn.signIn();
+    if (account == null) throw Exception('Google sign-in cancelled');
+
+    final auth = await account.authentication;
+    final idToken = auth.idToken;
+    if (idToken == null) throw Exception('Could not get Google ID token');
+
+    final response = await _dio.post('/auth/login/google',
+        data: GoogleLoginRequest(idToken: idToken).toJson());
     final data = response.data['data'] as Map<String, dynamic>;
     await _saveTokens(TokenPair.fromJson(data));
     return UserModel.fromJson(data['user'] as Map<String, dynamic>);

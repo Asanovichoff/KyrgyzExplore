@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +19,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _editing = false;
   bool _saving = false;
+  bool _uploadingAvatar = false;
 
   late final TextEditingController _firstNameCtrl;
   late final TextEditingController _lastNameCtrl;
@@ -38,6 +40,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _lastNameCtrl.dispose();
     _phoneCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _uploadAvatar() async {
+    setState(() => _uploadingAvatar = true);
+    try {
+      final updated = await ref.read(profileRepositoryProvider).uploadAvatar();
+      if (updated != null) {
+        ref.read(authStateProvider.notifier).updateUser(updated);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not upload photo: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _uploadingAvatar = false);
+    }
   }
 
   void _startEdit() => setState(() => _editing = true);
@@ -122,18 +142,64 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          // Avatar
+          // Avatar — tap to change photo
           Center(
-            child: CircleAvatar(
-              radius: 40,
-              backgroundColor: kTeal.withValues(alpha: 0.15),
-              child: Text(
-                _initials(user),
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: kTeal,
-                ),
+            child: GestureDetector(
+              onTap: _uploadingAvatar ? null : _uploadAvatar,
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: kTeal.withValues(alpha: 0.15),
+                    child: user.profileImageUrl != null
+                        ? ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl: user.profileImageUrl!,
+                              width: 80,
+                              height: 80,
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) => const CircularProgressIndicator(),
+                              errorWidget: (_, __, ___) => Text(
+                                _initials(user),
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: kTeal,
+                                ),
+                              ),
+                            ),
+                          )
+                        : Text(
+                            _initials(user),
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: kTeal,
+                            ),
+                          ),
+                  ),
+                  // Camera badge
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: kTeal,
+                        shape: BoxShape.circle,
+                      ),
+                      child: _uploadingAvatar
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white),
+                            )
+                          : const Icon(Icons.camera_alt, size: 14,
+                              color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

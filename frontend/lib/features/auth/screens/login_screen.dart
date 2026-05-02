@@ -118,6 +118,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: () => context.goNamed('register'),
                     child: const Text("Don't have an account? Create one"),
                   ),
+                  const SizedBox(height: 8),
+                  const Row(
+                    children: [
+                      Expanded(child: Divider()),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        child: Text('or',
+                            style: TextStyle(color: kGrey, fontSize: 13)),
+                      ),
+                      Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: authState.isLoading
+                        ? null
+                        : () async {
+                            try {
+                              await ref
+                                  .read(authStateProvider.notifier)
+                                  .loginWithGoogle();
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Google sign-in failed: $e')),
+                                );
+                              }
+                            }
+                          },
+                    icon: const Icon(Icons.login, size: 18),
+                    label: const Text('Continue with Google'),
+                  ),
                 ],
               ),
             ),

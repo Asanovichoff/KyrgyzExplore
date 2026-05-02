@@ -38,6 +38,17 @@ public class S3Service {
         s3Client.deleteObject(b -> b.bucket(s3Config.getS3().getBucket()).key(s3Key));
     }
 
+    /**
+     * Returns the permanent public URL for an object.
+     * Use this to store a URL that never expires (e.g. profile avatar, listing photo).
+     * The bucket must have public-read enabled (or a bucket policy for GET).
+     */
+    public String getPublicUrl(String s3Key) {
+        return "https://" + s3Config.getS3().getBucket()
+                + ".s3." + s3Config.getRegion()
+                + ".amazonaws.com/" + s3Key;
+    }
+
     public String generatePresignedGetUrl(String s3Key) {
         GetObjectRequest getRequest = GetObjectRequest.builder()
                 .bucket(s3Config.getS3().getBucket())
