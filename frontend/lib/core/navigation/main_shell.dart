@@ -42,22 +42,36 @@ class MainShell extends ConsumerWidget {
       }
     }
 
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: selectedIndex,
-        onDestinationSelected: (i) => context.go(items[i].route),
-        destinations: [
-          for (final item in items)
-            NavigationDestination(
-              icon: Icon(item.icon),
-              label: item.label,
-            ),
-          // Notification bell is always the last destination so it's always
-          // reachable regardless of role, without adding a separate AppBar icon
-          // on every screen.
-        ],
-      ),
+    // WHY Column instead of nested Scaffold?
+    // Each main screen (ExploreScreen, HostBookingsScreen, etc.) already has its
+    // own Scaffold. Wrapping them in another Scaffold causes nested-Scaffold layout
+    // conflicts: the outer Scaffold's body passes infinite-width constraints to
+    // the inner Scaffold's ListView in some rendering paths, crashing with
+    // "BoxConstraints forces an infinite width."
+    // Using Column + Expanded avoids the nested Scaffold entirely.
+    // MediaQuery.removePadding strips the bottom safe-area so the inner Scaffold
+    // doesn't double-count the home indicator — NavigationBar handles it itself.
+    return Column(
+      children: [
+        Expanded(
+          child: MediaQuery.removePadding(
+            context: context,
+            removeBottom: true,
+            child: child,
+          ),
+        ),
+        NavigationBar(
+          selectedIndex: selectedIndex,
+          onDestinationSelected: (i) => context.go(items[i].route),
+          destinations: [
+            for (final item in items)
+              NavigationDestination(
+                icon: Icon(item.icon),
+                label: item.label,
+              ),
+          ],
+        ),
+      ],
     );
   }
 }
