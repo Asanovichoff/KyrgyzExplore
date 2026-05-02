@@ -1,5 +1,6 @@
 {
   "@@locale": "ru",
+
   "appName": "KyrgyzExplore",
   "login": "Войти",
   "register": "Создать аккаунт",
@@ -20,5 +21,105 @@
   "home": "Исследовать",
   "trips": "Поездки",
   "messages": "Сообщения",
-  "profile": "Профиль"
+  "profile": "Профиль",
+
+  "cancel": "Отмена",
+  "edit": "Редактировать",
+  "delete": "Удалить",
+  "save": "Сохранить",
+  "saveChanges": "Сохранить изменения",
+  "confirm": "Подтвердить",
+  "reject": "Отклонить",
+  "continueLabel": "Продолжить",
+  "setUp": "Настроить",
+  "language": "Язык",
+
+  "filterAll": "Все",
+  "filterHouses": "Дома",
+  "filterCars": "Автомобили",
+  "filterActivities": "Активности",
+  "couldNotLoadListings": "Не удалось загрузить объявления",
+  "checkConnectionAndRetry": "Проверьте подключение и попробуйте снова",
+  "noListingsFound": "Объявления не найдены",
+  "tryDifferentFilter": "Попробуйте другой фильтр или область",
+
+  "about": "О месте",
+  "availabilityTitle": "Доступность",
+  "reviewsTitle": "Отзывы",
+  "reviewsLabel": "отзывов",
+  "bookNow": "Забронировать",
+  "perNight": "/ ночь",
+  "perDay": "/ день",
+  "couldNotLoadListing": "Не удалось загрузить объявление",
+  "couldNotLoadReviews": "Не удалось загрузить отзывы",
+  "noReviewsYet": "Отзывов пока нет",
+
+  "myBookings": "Мои бронирования",
+  "manageBookings": "Управление бронированиями",
+  "couldNotLoadBookings": "Не удалось загрузить бронирования",
+  "noBookingsYet": "Бронирований пока нет",
+  "chatWithHost": "Написать хозяину",
+  "chatWithGuest": "Написать гостю",
+  "cancelBookingTitle": "Отменить бронирование?",
+  "cancelBookingContent": "Это действие нельзя отменить.",
+  "keepIt": "Оставить",
+  "cancelBookingAction": "Отменить бронирование",
+  "paymentSuccessful": "Оплата прошла успешно!",
+  "paymentFailed": "Ошибка оплаты",
+  "payNow": "Оплатить",
+  "leaveReview": "Оставить отзыв",
+  "reviewSubmitted": "Отзыв отправлен! Спасибо.",
+  "couldNotCancel": "Не удалось отменить бронирование",
+  "rejectBookingTitle": "Отклонить бронирование",
+  "giveReasonRequired": "Укажите причину (обязательно)",
+  "nightCount": "{count, plural, =1{1 ночь} few{{count} ночи} many{{count} ночей} other{{count} ночи}}",
+  "@nightCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "guestCount": "{count, plural, =1{1 гость} few{{count} гостя} many{{count} гостей} other{{count} гостя}}",
+  "@guestCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "statusPending": "Ожидает",
+  "statusConfirmed": "Подтверждено",
+  "statusRejected": "Отклонено",
+  "statusCancelled": "Отменено",
+  "statusPaid": "Оплачено",
+
+  "myListings": "Мои объявления",
+  "noListingsYet": "Объявлений пока нет",
+  "tapToCreateFirstListing": "Нажмите + чтобы создать первое объявление",
+  "createListing": "Создать объявление",
+  "deleteListingTitle": "Удалить объявление?",
+  "deleteListingContent": "Это удалит объявление и отменит все ожидающие бронирования.",
+  "couldNotDelete": "Не удалось удалить объявление",
+  "manageDates": "Управление датами",
+  "typeHouse": "Дом",
+  "typeCar": "Автомобиль",
+  "typeActivity": "Активность",
+
+  "notifications": "Уведомления",
+  "markAllRead": "Отметить все как прочитанные",
+  "couldNotLoadNotifications": "Не удалось загрузить уведомления",
+  "noNotificationsYet": "Уведомлений пока нет",
+
+  "phoneOptional": "Телефон (необязательно)",
+  "couldNotUploadPhoto": "Не удалось загрузить фото",
+  "couldNotSave": "Не удалось сохранить",
+  "profileUpdated": "Профиль обновлён",
+  "payoutSettings": "Настройки выплат",
+  "payoutsEnabled": "Выплаты включены",
+  "verificationInProgress": "Верификация в процессе",
+  "notConnected": "Не подключено",
+  "youWillReceivePayouts": "Вы будете получать выплаты от бронирований",
+  "stripeReviewing": "Stripe проверяет вашу информацию",
+  "connectStripe": "Подключите Stripe для получения платежей",
+  "viewEarnings": "Просмотр доходов",
+  "couldNotOpenBrowser": "Не удалось открыть браузер",
+  "couldNotStartOnboarding": "Не удалось начать настройку"
 }

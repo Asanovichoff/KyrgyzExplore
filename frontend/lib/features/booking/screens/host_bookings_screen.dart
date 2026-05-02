@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/models/app_exception.dart';
@@ -16,26 +18,17 @@ class HostBookingsScreen extends ConsumerWidget {
     final bookingsAsync = ref.watch(hostBookingsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Manage Bookings')),
+      appBar: AppBar(title: Text(context.l10n.manageBookings)),
       body: bookingsAsync.when(
-              loading: () => const Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Loading bookings...'),
-                  ],
-                ),
-              ),
+              loading: () => const _BookingsListSkeleton(),
               error: (err, _) {
                 String message;
                 if (err is DioException && err.error is ServerException) {
                   message = (err.error as ServerException).message;
                 } else if (err is DioException && err.error is NetworkException) {
-                  message = 'No connection to server';
+                  message = context.l10n.checkConnectionAndRetry;
                 } else {
-                  message = err.toString();
+                  message = context.l10n.couldNotLoadBookings;
                 }
                 return Center(
                   child: Column(
@@ -50,7 +43,7 @@ class HostBookingsScreen extends ConsumerWidget {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () => ref.invalidate(hostBookingsProvider),
-                        child: const Text('Retry'),
+                        child: Text(context.l10n.retry),
                       ),
                     ],
                   ),
@@ -58,14 +51,14 @@ class HostBookingsScreen extends ConsumerWidget {
               },
               data: (bookings) {
                 if (bookings.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.inbox_outlined, size: 64, color: kGrey),
-                        SizedBox(height: 16),
-                        Text('No bookings yet',
-                            style: TextStyle(color: kGrey, fontSize: 16)),
+                        const Icon(Icons.inbox_outlined, size: 64, color: kGrey),
+                        const SizedBox(height: 16),
+                        Text(context.l10n.noBookingsYet,
+                            style: const TextStyle(color: kGrey, fontSize: 16)),
                       ],
                     ),
                   );
@@ -117,8 +110,9 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
       widget.onRefresh();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${context.l10n.confirm}: $e')),
+        );
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -137,8 +131,9 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
       widget.onRefresh();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${context.l10n.reject}: $e')),
+        );
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -150,20 +145,20 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
     return showDialog<String>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Reject booking'),
+        title: Text(context.l10n.rejectBookingTitle),
         content: TextField(
           controller: controller,
           maxLines: 3,
           maxLength: 500,
-          decoration: const InputDecoration(
-            hintText: 'Give a reason (required)',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            hintText: context.l10n.giveReasonRequired,
+            border: const OutlineInputBorder(),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -171,7 +166,7 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
               if (text.isNotEmpty) Navigator.pop(context, text);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Reject'),
+            child: Text(context.l10n.reject),
           ),
         ],
       ),
@@ -198,7 +193,7 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
               children: [
                 Expanded(
                   child: Text(
-                    booking.listingTitle ?? 'Listing',
+                    booking.listingTitle ?? context.l10n.myListings,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -209,7 +204,7 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
                 if (canChat)
                   IconButton(
                     icon: const Icon(Icons.chat_bubble_outline, size: 20),
-                    tooltip: 'Chat with guest',
+                    tooltip: context.l10n.chatWithGuest,
                     visualDensity: VisualDensity.compact,
                     onPressed: () => context.pushNamed(
                       'chat',
@@ -229,7 +224,7 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
                   ?.copyWith(color: kGrey),
             ),
             Text(
-              '${booking.numberOfGuests} guest${booking.numberOfGuests == 1 ? '' : 's'}  ·  ${booking.totalPrice.toStringAsFixed(0)} KGS',
+              '${context.l10n.guestCount(booking.numberOfGuests)}  ·  ${booking.totalPrice.toStringAsFixed(0)} KGS',
               style: Theme.of(context)
                   .textTheme
                   .bodySmall
@@ -266,7 +261,7 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
                         foregroundColor: Colors.red,
                         side: const BorderSide(color: Colors.red),
                       ),
-                      child: const Text('Reject'),
+                      child: Text(context.l10n.reject),
                     ),
                     const SizedBox(width: 10),
                     ElevatedButton(
@@ -274,7 +269,7 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
                       style: ElevatedButton.styleFrom(
                           backgroundColor: kTeal,
                           foregroundColor: Colors.white),
-                      child: const Text('Confirm'),
+                      child: Text(context.l10n.confirm),
                     ),
                   ],
                 ],
@@ -287,34 +282,90 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
   }
 }
 
+class _BookingsListSkeleton extends StatelessWidget {
+  const _BookingsListSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: 4,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (_, __) => Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(height: 14, width: 160, color: Colors.white),
+                    Container(
+                      height: 22,
+                      width: 70,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Container(height: 11, width: 140, color: Colors.white),
+                const SizedBox(height: 6),
+                Container(height: 11, width: 100, color: Colors.white),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge({required this.status});
 
   final String status;
 
-  static const _config = {
-    'PENDING': (label: 'Pending', color: Colors.amber),
-    'CONFIRMED': (label: 'Confirmed', color: Colors.green),
-    'REJECTED': (label: 'Rejected', color: kGrey),
-    'CANCELLED': (label: 'Cancelled', color: kGrey),
-    'PAID': (label: 'Paid', color: kTeal),
+  static const _colors = {
+    'PENDING': Colors.amber,
+    'CONFIRMED': Colors.green,
+    'REJECTED': kGrey,
+    'CANCELLED': kGrey,
+    'PAID': kTeal,
+  };
+
+  String _label(BuildContext context) => switch (status) {
+    'PENDING'   => context.l10n.statusPending,
+    'CONFIRMED' => context.l10n.statusConfirmed,
+    'REJECTED'  => context.l10n.statusRejected,
+    'CANCELLED' => context.l10n.statusCancelled,
+    'PAID'      => context.l10n.statusPaid,
+    _           => status,
   };
 
   @override
   Widget build(BuildContext context) {
-    final cfg = _config[status] ?? (label: status, color: kGrey);
+    final color = _colors[status] ?? kGrey;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: cfg.color.withValues(alpha: 0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        cfg.label,
+        _label(context),
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: cfg.color,
+          color: color,
         ),
       ),
     );

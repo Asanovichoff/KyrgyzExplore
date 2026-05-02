@@ -1,5 +1,6 @@
 {
   "@@locale": "ky",
+
   "appName": "KyrgyzExplore",
   "login": "Кирүү",
   "register": "Каттоо жасоо",
@@ -20,5 +21,105 @@
   "home": "Изилдөө",
   "trips": "Саякаттар",
   "messages": "Билдирүүлөр",
-  "profile": "Профиль"
+  "profile": "Профиль",
+
+  "cancel": "Жокко чыгаруу",
+  "edit": "Өзгөртүү",
+  "delete": "Жок кылуу",
+  "save": "Сактоо",
+  "saveChanges": "Өзгөртүүлөрдү сактоо",
+  "confirm": "Тастыктоо",
+  "reject": "Баш тартуу",
+  "continueLabel": "Улантуу",
+  "setUp": "Орнотуу",
+  "language": "Тил",
+
+  "filterAll": "Баары",
+  "filterHouses": "Үйлөр",
+  "filterCars": "Машиналар",
+  "filterActivities": "Иш-чаралар",
+  "couldNotLoadListings": "Жарнамаларды жүктөй алмак эмес",
+  "checkConnectionAndRetry": "Байланышыңызды текшерип, кайра аракет кылыңыз",
+  "noListingsFound": "Жарнамалар табылган жок",
+  "tryDifferentFilter": "Башка чыпка же аймакты колдонуп көрүңүз",
+
+  "about": "Жөнүндө",
+  "availabilityTitle": "Жеткиликтүүлүк",
+  "reviewsTitle": "Пикирлер",
+  "reviewsLabel": "пикир",
+  "bookNow": "Азыр броньдоо",
+  "perNight": "/ түн",
+  "perDay": "/ күн",
+  "couldNotLoadListing": "Жарнаманы жүктөй алмак эмес",
+  "couldNotLoadReviews": "Пикирлерди жүктөй алмак эмес",
+  "noReviewsYet": "Азырынча пикир жок",
+
+  "myBookings": "Менин броньдорум",
+  "manageBookings": "Броньдорду башкаруу",
+  "couldNotLoadBookings": "Броньдорду жүктөй алмак эмес",
+  "noBookingsYet": "Азырынча бронь жок",
+  "chatWithHost": "Ээси менен сүйлөшүү",
+  "chatWithGuest": "Конок менен сүйлөшүү",
+  "cancelBookingTitle": "Броньду жокко чыгарасызбы?",
+  "cancelBookingContent": "Бул аракетти кайтарып алуу мүмкүн эмес.",
+  "keepIt": "Калтыруу",
+  "cancelBookingAction": "Броньду жокко чыгаруу",
+  "paymentSuccessful": "Төлөм ийгиликтүү болду!",
+  "paymentFailed": "Төлөм ийгиликсиз болду",
+  "payNow": "Азыр төлөө",
+  "leaveReview": "Пикир калтыруу",
+  "reviewSubmitted": "Пикириңиз кабыл алынды! Рахмат.",
+  "couldNotCancel": "Броньду жокко чыгара алган жок",
+  "rejectBookingTitle": "Броньду баш тартуу",
+  "giveReasonRequired": "Себебин жазыңыз (милдеттүү)",
+  "nightCount": "{count, plural, =1{1 түн} other{{count} түн}}",
+  "@nightCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "guestCount": "{count, plural, =1{1 конок} other{{count} конок}}",
+  "@guestCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "statusPending": "Күтүүдө",
+  "statusConfirmed": "Тастыкталды",
+  "statusRejected": "Баш тартылды",
+  "statusCancelled": "Жокко чыгарылды",
+  "statusPaid": "Төлөндү",
+
+  "myListings": "Менин жарнамаларым",
+  "noListingsYet": "Азырынча жарнама жок",
+  "tapToCreateFirstListing": "Биринчи жарнамаңызды жасоо үчүн + баскычын басыңыз",
+  "createListing": "Жарнама жасоо",
+  "deleteListingTitle": "Жарнаманы жок кылуу?",
+  "deleteListingContent": "Бул жарнаманы жана бардык күтүүдөгү броньдорду жок кылат.",
+  "couldNotDelete": "Жарнаманы жок кыла алган жок",
+  "manageDates": "Күндөрдү башкаруу",
+  "typeHouse": "Үй",
+  "typeCar": "Машина",
+  "typeActivity": "Иш-чара",
+
+  "notifications": "Билдирүүлөр",
+  "markAllRead": "Баарын окулган деп белгилөө",
+  "couldNotLoadNotifications": "Билдирүүлөрдү жүктөй алмак эмес",
+  "noNotificationsYet": "Азырынча билдирүүлөр жок",
+
+  "phoneOptional": "Телефон (кошумча)",
+  "couldNotUploadPhoto": "Сүрөттү жүктөй алган жок",
+  "couldNotSave": "Сактай алган жок",
+  "profileUpdated": "Профиль жаңыланды",
+  "payoutSettings": "Төлөм жөндөөлөрү",
+  "payoutsEnabled": "Төлөмдөр иштетилди",
+  "verificationInProgress": "Текшерүү жүрүп жатат",
+  "notConnected": "Туташтырылган жок",
+  "youWillReceivePayouts": "Броньдордон төлөм аласыз",
+  "stripeReviewing": "Stripe маалыматыңызды текшерүүдө",
+  "connectStripe": "Төлөм алуу үчүн Stripe туташтырыңыз",
+  "viewEarnings": "Кирешени көрүү",
+  "couldNotOpenBrowser": "Браузерди ача алган жок",
+  "couldNotStartOnboarding": "Орнотууну баштай алган жок"
 }

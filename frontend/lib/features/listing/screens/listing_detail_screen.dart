@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/type_badge.dart';
 import '../../auth/providers/auth_provider.dart';
@@ -20,9 +21,7 @@ class ListingDetailScreen extends ConsumerWidget {
     final detailAsync = ref.watch(listingDetailProvider(listingId));
 
     return detailAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () => const _DetailSkeleton(),
       error: (err, _) => Scaffold(
         appBar: AppBar(),
         body: Center(
@@ -31,11 +30,11 @@ class ListingDetailScreen extends ConsumerWidget {
             children: [
               const Icon(Icons.error_outline, size: 48, color: kGrey),
               const SizedBox(height: 12),
-              const Text('Could not load listing'),
+              Text(context.l10n.couldNotLoadListing),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.invalidate(listingDetailProvider(listingId)),
-                child: const Text('Retry'),
+                child: Text(context.l10n.retry),
               ),
             ],
           ),
@@ -43,7 +42,7 @@ class ListingDetailScreen extends ConsumerWidget {
       ),
       data: (listing) {
         final priceLabel =
-            listing.type == 'CAR' ? '/ day' : '/ night';
+            listing.type == 'CAR' ? context.l10n.perDay : context.l10n.perNight;
 
         return Scaffold(
           body: CustomScrollView(
@@ -115,7 +114,7 @@ class ListingDetailScreen extends ConsumerWidget {
                                   ?.copyWith(fontWeight: FontWeight.w600),
                             ),
                             Text(
-                              '  (${listing.reviewCount} reviews)',
+                              '  (${listing.reviewCount} ${context.l10n.reviewsLabel})',
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -128,7 +127,7 @@ class ListingDetailScreen extends ConsumerWidget {
 
                       // Description
                       if (listing.description.isNotEmpty) ...[
-                        Text('About',
+                        Text(context.l10n.about,
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
@@ -142,7 +141,7 @@ class ListingDetailScreen extends ConsumerWidget {
                       ],
 
                       // Availability calendar
-                      Text('Availability',
+                      Text(context.l10n.availabilityTitle,
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium
@@ -212,7 +211,7 @@ class ListingDetailScreen extends ConsumerWidget {
                               pathParameters: {'listingId': listingId},
                               extra: listing,
                             ),
-                            child: const Text('Book Now'),
+                            child: Text(context.l10n.bookNow),
                           ),
                         ),
                       ],
@@ -237,7 +236,7 @@ class _ReviewsSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Reviews',
+        Text(context.l10n.reviewsTitle,
             style: Theme.of(context)
                 .textTheme
                 .titleMedium
@@ -245,12 +244,12 @@ class _ReviewsSection extends ConsumerWidget {
         const SizedBox(height: 8),
         reviewsAsync.when(
           loading: () => _ReviewsSkeleton(),
-          error: (_, __) => const Text('Could not load reviews',
-              style: TextStyle(color: kGrey)),
+          error: (_, __) => Text(context.l10n.couldNotLoadReviews,
+              style: const TextStyle(color: kGrey)),
           data: (reviews) {
             if (reviews.isEmpty) {
-              return const Text('No reviews yet',
-                  style: TextStyle(color: kGrey));
+              return Text(context.l10n.noReviewsYet,
+                  style: const TextStyle(color: kGrey));
             }
             return Column(
               children: reviews
@@ -260,6 +259,60 @@ class _ReviewsSection extends ConsumerWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+class _DetailSkeleton extends StatelessWidget {
+  const _DetailSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Shimmer.fromColors(
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 260,
+              flexibleSpace: FlexibleSpaceBar(
+                background: Container(color: Colors.white),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(height: 22, width: 220, color: Colors.white),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 20,
+                      width: 80,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(height: 14, width: 130, color: Colors.white),
+                    const SizedBox(height: 28),
+                    Container(height: 14, color: Colors.white),
+                    const SizedBox(height: 6),
+                    Container(height: 14, color: Colors.white),
+                    const SizedBox(height: 6),
+                    Container(height: 14, width: 240, color: Colors.white),
+                    const SizedBox(height: 6),
+                    Container(height: 14, width: 180, color: Colors.white),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

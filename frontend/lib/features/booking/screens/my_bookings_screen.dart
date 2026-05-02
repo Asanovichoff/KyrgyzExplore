@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import 'package:flutter_stripe/flutter_stripe.dart' hide Card;
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
@@ -16,34 +18,34 @@ class MyBookingsScreen extends ConsumerWidget {
     final bookingsAsync = ref.watch(myBookingsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Bookings')),
+      appBar: AppBar(title: Text(context.l10n.myBookings)),
       body: bookingsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const _BookingsListSkeleton(),
         error: (err, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Icons.error_outline, size: 48, color: kGrey),
               const SizedBox(height: 12),
-              const Text('Could not load bookings'),
+              Text(context.l10n.couldNotLoadBookings),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.invalidate(myBookingsProvider),
-                child: const Text('Retry'),
+                child: Text(context.l10n.retry),
               ),
             ],
           ),
         ),
         data: (bookings) {
           if (bookings.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.receipt_long_outlined, size: 64, color: kGrey),
-                  SizedBox(height: 16),
-                  Text('No bookings yet',
-                      style: TextStyle(color: kGrey, fontSize: 16)),
+                  const Icon(Icons.receipt_long_outlined, size: 64, color: kGrey),
+                  const SizedBox(height: 16),
+                  Text(context.l10n.noBookingsYet,
+                      style: const TextStyle(color: kGrey, fontSize: 16)),
                 ],
               ),
             );
@@ -83,20 +85,21 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
   }
 
   Future<void> _handleCancel() async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Cancel booking?'),
-        content: const Text('This action cannot be undone.'),
+        title: Text(l10n.cancelBookingTitle),
+        content: Text(l10n.cancelBookingContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Keep it'),
+            child: Text(l10n.keepIt),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Cancel booking',
-                style: TextStyle(color: Colors.red)),
+            child: Text(l10n.cancelBookingAction,
+                style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -107,10 +110,10 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
     try {
       await ref.read(bookingRepositoryProvider).cancel(widget.booking.id);
       ref.invalidate(myBookingsProvider);
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not cancel: $e')),
+          SnackBar(content: Text(context.l10n.couldNotCancel)),
         );
       }
     } finally {
@@ -145,20 +148,20 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
       ref.invalidate(myBookingsProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Payment successful!')),
+          SnackBar(content: Text(context.l10n.paymentSuccessful)),
         );
       }
     } on StripeException catch (e) {
       if (mounted && e.error.code != FailureCode.Canceled) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(e.error.localizedMessage ?? 'Payment failed')),
+              content: Text(e.error.localizedMessage ?? context.l10n.paymentFailed)),
         );
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Payment failed: $e')),
+          SnackBar(content: Text(context.l10n.paymentFailed)),
         );
       }
     } finally {
@@ -176,7 +179,7 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
         onSuccess: () {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Review submitted! Thank you.')),
+              SnackBar(content: Text(context.l10n.reviewSubmitted)),
             );
           }
         },
@@ -207,7 +210,7 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
               children: [
                 Expanded(
                   child: Text(
-                    booking.listingTitle ?? 'Booking',
+                    booking.listingTitle ?? context.l10n.myBookings,
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium
@@ -220,7 +223,7 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
                 if (canChat)
                   IconButton(
                     icon: const Icon(Icons.chat_bubble_outline, size: 20),
-                    tooltip: 'Chat with host',
+                    tooltip: context.l10n.chatWithHost,
                     visualDensity: VisualDensity.compact,
                     onPressed: () => context.pushNamed(
                       'chat',
@@ -241,7 +244,7 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
             ),
             const SizedBox(height: 2),
             Text(
-              '${booking.nightCount} night${booking.nightCount == 1 ? '' : 's'}  ·  ${booking.totalPrice.toStringAsFixed(0)} KGS',
+              '${context.l10n.nightCount(booking.nightCount.toInt())}  ·  ${booking.totalPrice.toStringAsFixed(0)} KGS',
               style: Theme.of(context)
                   .textTheme
                   .bodySmall
@@ -262,8 +265,8 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
                               width: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Text('Cancel',
-                              style: TextStyle(color: Colors.red)),
+                          : Text(context.l10n.cancel,
+                              style: const TextStyle(color: Colors.red)),
                     ),
                   if (canPay) ...[
                     const SizedBox(width: 8),
@@ -276,18 +279,72 @@ class _BookingCardState extends ConsumerState<_BookingCard> {
                               child: CircularProgressIndicator(
                                   strokeWidth: 2, color: Colors.white),
                             )
-                          : const Text('Pay now'),
+                          : Text(context.l10n.payNow),
                     ),
                   ],
                   if (canReview)
                     OutlinedButton.icon(
                       onPressed: _handleReview,
                       icon: const Icon(Icons.star_outline, size: 16),
-                      label: const Text('Leave review'),
+                      label: Text(context.l10n.leaveReview),
                     ),
                 ],
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BookingsListSkeleton extends StatelessWidget {
+  const _BookingsListSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: 4,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (_, __) => _BookingCardSkeleton(),
+      ),
+    );
+  }
+}
+
+class _BookingCardSkeleton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(height: 14, width: 160, color: Colors.white),
+                Container(
+                  height: 22,
+                  width: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(height: 11, width: 140, color: Colors.white),
+            const SizedBox(height: 6),
+            Container(height: 11, width: 100, color: Colors.white),
           ],
         ),
       ),
@@ -300,29 +357,38 @@ class _StatusBadge extends StatelessWidget {
 
   final String status;
 
-  static const _config = {
-    'PENDING': (label: 'Pending', color: Colors.amber),
-    'CONFIRMED': (label: 'Confirmed', color: Colors.green),
-    'REJECTED': (label: 'Rejected', color: kGrey),
-    'CANCELLED': (label: 'Cancelled', color: kGrey),
-    'PAID': (label: 'Paid', color: kTeal),
+  static const _colors = {
+    'PENDING': Colors.amber,
+    'CONFIRMED': Colors.green,
+    'REJECTED': kGrey,
+    'CANCELLED': kGrey,
+    'PAID': kTeal,
+  };
+
+  String _label(BuildContext context) => switch (status) {
+    'PENDING'   => context.l10n.statusPending,
+    'CONFIRMED' => context.l10n.statusConfirmed,
+    'REJECTED'  => context.l10n.statusRejected,
+    'CANCELLED' => context.l10n.statusCancelled,
+    'PAID'      => context.l10n.statusPaid,
+    _           => status,
   };
 
   @override
   Widget build(BuildContext context) {
-    final cfg = _config[status] ?? (label: status, color: kGrey);
+    final color = _colors[status] ?? kGrey;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: cfg.color.withValues(alpha: 0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        cfg.label,
+        _label(context),
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: cfg.color,
+          color: color,
         ),
       ),
     );

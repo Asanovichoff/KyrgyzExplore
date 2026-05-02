@@ -1,5 +1,6 @@
 {
   "@@locale": "en",
+
   "appName": "KyrgyzExplore",
   "login": "Log In",
   "register": "Create Account",
@@ -20,5 +21,105 @@
   "home": "Explore",
   "trips": "Trips",
   "messages": "Messages",
-  "profile": "Profile"
+  "profile": "Profile",
+
+  "cancel": "Cancel",
+  "edit": "Edit",
+  "delete": "Delete",
+  "save": "Save",
+  "saveChanges": "Save changes",
+  "confirm": "Confirm",
+  "reject": "Reject",
+  "continueLabel": "Continue",
+  "setUp": "Set up",
+  "language": "Language",
+
+  "filterAll": "All",
+  "filterHouses": "Houses",
+  "filterCars": "Cars",
+  "filterActivities": "Activities",
+  "couldNotLoadListings": "Could not load listings",
+  "checkConnectionAndRetry": "Check your connection and try again",
+  "noListingsFound": "No listings found",
+  "tryDifferentFilter": "Try a different filter or area",
+
+  "about": "About",
+  "availabilityTitle": "Availability",
+  "reviewsTitle": "Reviews",
+  "reviewsLabel": "reviews",
+  "bookNow": "Book Now",
+  "perNight": "/ night",
+  "perDay": "/ day",
+  "couldNotLoadListing": "Could not load listing",
+  "couldNotLoadReviews": "Could not load reviews",
+  "noReviewsYet": "No reviews yet",
+
+  "myBookings": "My Bookings",
+  "manageBookings": "Manage Bookings",
+  "couldNotLoadBookings": "Could not load bookings",
+  "noBookingsYet": "No bookings yet",
+  "chatWithHost": "Chat with host",
+  "chatWithGuest": "Chat with guest",
+  "cancelBookingTitle": "Cancel booking?",
+  "cancelBookingContent": "This action cannot be undone.",
+  "keepIt": "Keep it",
+  "cancelBookingAction": "Cancel booking",
+  "paymentSuccessful": "Payment successful!",
+  "paymentFailed": "Payment failed",
+  "payNow": "Pay now",
+  "leaveReview": "Leave review",
+  "reviewSubmitted": "Review submitted! Thank you.",
+  "couldNotCancel": "Could not cancel booking",
+  "rejectBookingTitle": "Reject booking",
+  "giveReasonRequired": "Give a reason (required)",
+  "nightCount": "{count, plural, =1{1 night} other{{count} nights}}",
+  "@nightCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "guestCount": "{count, plural, =1{1 guest} other{{count} guests}}",
+  "@guestCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "statusPending": "Pending",
+  "statusConfirmed": "Confirmed",
+  "statusRejected": "Rejected",
+  "statusCancelled": "Cancelled",
+  "statusPaid": "Paid",
+
+  "myListings": "My Listings",
+  "noListingsYet": "No listings yet",
+  "tapToCreateFirstListing": "Tap + to create your first listing",
+  "createListing": "Create listing",
+  "deleteListingTitle": "Delete listing?",
+  "deleteListingContent": "This will remove the listing and cancel any pending bookings.",
+  "couldNotDelete": "Could not delete listing",
+  "manageDates": "Manage dates",
+  "typeHouse": "House",
+  "typeCar": "Car",
+  "typeActivity": "Activity",
+
+  "notifications": "Notifications",
+  "markAllRead": "Mark all read",
+  "couldNotLoadNotifications": "Could not load notifications",
+  "noNotificationsYet": "No notifications yet",
+
+  "phoneOptional": "Phone (optional)",
+  "couldNotUploadPhoto": "Could not upload photo",
+  "couldNotSave": "Could not save",
+  "profileUpdated": "Profile updated",
+  "payoutSettings": "Payout Settings",
+  "payoutsEnabled": "Payouts enabled",
+  "verificationInProgress": "Verification in progress",
+  "notConnected": "Not connected",
+  "youWillReceivePayouts": "You will receive payouts from bookings",
+  "stripeReviewing": "Stripe is reviewing your information",
+  "connectStripe": "Connect Stripe to receive payments",
+  "viewEarnings": "View earnings",
+  "couldNotOpenBrowser": "Could not open browser",
+  "couldNotStartOnboarding": "Could not start onboarding"
 }

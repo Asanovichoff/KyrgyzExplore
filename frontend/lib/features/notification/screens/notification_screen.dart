@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/notification_model.dart';
 import '../providers/notification_provider.dart';
@@ -14,7 +16,7 @@ class NotificationScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: Text(context.l10n.notifications),
         actions: [
           TextButton(
             onPressed: () async {
@@ -24,38 +26,38 @@ class NotificationScreen extends ConsumerWidget {
               ref.invalidate(notificationsProvider);
               ref.invalidate(unreadCountProvider);
             },
-            child: const Text('Mark all read'),
+            child: Text(context.l10n.markAllRead),
           ),
         ],
       ),
       body: asyncNotifs.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const _NotificationsListSkeleton(),
         error: (_, __) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const Icon(Icons.error_outline, size: 48, color: kGrey),
               const SizedBox(height: 12),
-              const Text('Could not load notifications'),
+              Text(context.l10n.couldNotLoadNotifications),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.invalidate(notificationsProvider),
-                child: const Text('Retry'),
+                child: Text(context.l10n.retry),
               ),
             ],
           ),
         ),
         data: (notifications) {
           if (notifications.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.notifications_none_outlined,
+                  const Icon(Icons.notifications_none_outlined,
                       size: 64, color: kGrey),
-                  SizedBox(height: 16),
-                  Text('No notifications yet',
-                      style: TextStyle(color: kGrey, fontSize: 16)),
+                  const SizedBox(height: 16),
+                  Text(context.l10n.noNotificationsYet,
+                      style: const TextStyle(color: kGrey, fontSize: 16)),
                 ],
               ),
             );
@@ -83,6 +85,54 @@ class NotificationScreen extends ConsumerWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _NotificationsListSkeleton extends StatelessWidget {
+  const _NotificationsListSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: ListView.separated(
+        itemCount: 6,
+        separatorBuilder: (_, __) => const Divider(height: 1),
+        itemBuilder: (_, __) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(width: 18),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(height: 13, width: 180, color: Colors.white),
+                    const SizedBox(height: 6),
+                    Container(height: 11, color: Colors.white),
+                    const SizedBox(height: 4),
+                    Container(height: 11, width: 240, color: Colors.white),
+                    const SizedBox(height: 6),
+                    Container(height: 10, width: 60, color: Colors.white),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

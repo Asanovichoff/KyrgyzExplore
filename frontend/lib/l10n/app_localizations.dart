@@ -225,6 +225,498 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get profile;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveChanges;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get reject;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueLabel;
+
+  /// No description provided for @setUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up'**
+  String get setUp;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterHouses.
+  ///
+  /// In en, this message translates to:
+  /// **'Houses'**
+  String get filterHouses;
+
+  /// No description provided for @filterCars.
+  ///
+  /// In en, this message translates to:
+  /// **'Cars'**
+  String get filterCars;
+
+  /// No description provided for @filterActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'Activities'**
+  String get filterActivities;
+
+  /// No description provided for @couldNotLoadListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load listings'**
+  String get couldNotLoadListings;
+
+  /// No description provided for @checkConnectionAndRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again'**
+  String get checkConnectionAndRetry;
+
+  /// No description provided for @noListingsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings found'**
+  String get noListingsFound;
+
+  /// No description provided for @tryDifferentFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different filter or area'**
+  String get tryDifferentFilter;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @availabilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get availabilityTitle;
+
+  /// No description provided for @reviewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get reviewsTitle;
+
+  /// No description provided for @reviewsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'reviews'**
+  String get reviewsLabel;
+
+  /// No description provided for @bookNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Book Now'**
+  String get bookNow;
+
+  /// No description provided for @perNight.
+  ///
+  /// In en, this message translates to:
+  /// **'/ night'**
+  String get perNight;
+
+  /// No description provided for @perDay.
+  ///
+  /// In en, this message translates to:
+  /// **'/ day'**
+  String get perDay;
+
+  /// No description provided for @couldNotLoadListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load listing'**
+  String get couldNotLoadListing;
+
+  /// No description provided for @couldNotLoadReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load reviews'**
+  String get couldNotLoadReviews;
+
+  /// No description provided for @noReviewsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
+  String get noReviewsYet;
+
+  /// No description provided for @myBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'My Bookings'**
+  String get myBookings;
+
+  /// No description provided for @manageBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Bookings'**
+  String get manageBookings;
+
+  /// No description provided for @couldNotLoadBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load bookings'**
+  String get couldNotLoadBookings;
+
+  /// No description provided for @noBookingsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings yet'**
+  String get noBookingsYet;
+
+  /// No description provided for @chatWithHost.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with host'**
+  String get chatWithHost;
+
+  /// No description provided for @chatWithGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with guest'**
+  String get chatWithGuest;
+
+  /// No description provided for @cancelBookingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel booking?'**
+  String get cancelBookingTitle;
+
+  /// No description provided for @cancelBookingContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get cancelBookingContent;
+
+  /// No description provided for @keepIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it'**
+  String get keepIt;
+
+  /// No description provided for @cancelBookingAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel booking'**
+  String get cancelBookingAction;
+
+  /// No description provided for @paymentSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment successful!'**
+  String get paymentSuccessful;
+
+  /// No description provided for @paymentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed'**
+  String get paymentFailed;
+
+  /// No description provided for @payNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay now'**
+  String get payNow;
+
+  /// No description provided for @leaveReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave review'**
+  String get leaveReview;
+
+  /// No description provided for @reviewSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted! Thank you.'**
+  String get reviewSubmitted;
+
+  /// No description provided for @couldNotCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel booking'**
+  String get couldNotCancel;
+
+  /// No description provided for @rejectBookingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject booking'**
+  String get rejectBookingTitle;
+
+  /// No description provided for @giveReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Give a reason (required)'**
+  String get giveReasonRequired;
+
+  /// No description provided for @nightCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 night} other{{count} nights}}'**
+  String nightCount(int count);
+
+  /// No description provided for @guestCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 guest} other{{count} guests}}'**
+  String guestCount(int count);
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get statusConfirmed;
+
+  /// No description provided for @statusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get statusRejected;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
+
+  /// No description provided for @statusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get statusPaid;
+
+  /// No description provided for @myListings.
+  ///
+  /// In en, this message translates to:
+  /// **'My Listings'**
+  String get myListings;
+
+  /// No description provided for @noListingsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings yet'**
+  String get noListingsYet;
+
+  /// No description provided for @tapToCreateFirstListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to create your first listing'**
+  String get tapToCreateFirstListing;
+
+  /// No description provided for @createListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Create listing'**
+  String get createListing;
+
+  /// No description provided for @deleteListingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete listing?'**
+  String get deleteListingTitle;
+
+  /// No description provided for @deleteListingContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove the listing and cancel any pending bookings.'**
+  String get deleteListingContent;
+
+  /// No description provided for @couldNotDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete listing'**
+  String get couldNotDelete;
+
+  /// No description provided for @manageDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage dates'**
+  String get manageDates;
+
+  /// No description provided for @typeHouse.
+  ///
+  /// In en, this message translates to:
+  /// **'House'**
+  String get typeHouse;
+
+  /// No description provided for @typeCar.
+  ///
+  /// In en, this message translates to:
+  /// **'Car'**
+  String get typeCar;
+
+  /// No description provided for @typeActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get typeActivity;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @markAllRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all read'**
+  String get markAllRead;
+
+  /// No description provided for @couldNotLoadNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load notifications'**
+  String get couldNotLoadNotifications;
+
+  /// No description provided for @noNotificationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get noNotificationsYet;
+
+  /// No description provided for @phoneOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone (optional)'**
+  String get phoneOptional;
+
+  /// No description provided for @couldNotUploadPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not upload photo'**
+  String get couldNotUploadPhoto;
+
+  /// No description provided for @couldNotSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save'**
+  String get couldNotSave;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
+  String get profileUpdated;
+
+  /// No description provided for @payoutSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout Settings'**
+  String get payoutSettings;
+
+  /// No description provided for @payoutsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts enabled'**
+  String get payoutsEnabled;
+
+  /// No description provided for @verificationInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification in progress'**
+  String get verificationInProgress;
+
+  /// No description provided for @notConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not connected'**
+  String get notConnected;
+
+  /// No description provided for @youWillReceivePayouts.
+  ///
+  /// In en, this message translates to:
+  /// **'You will receive payouts from bookings'**
+  String get youWillReceivePayouts;
+
+  /// No description provided for @stripeReviewing.
+  ///
+  /// In en, this message translates to:
+  /// **'Stripe is reviewing your information'**
+  String get stripeReviewing;
+
+  /// No description provided for @connectStripe.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Stripe to receive payments'**
+  String get connectStripe;
+
+  /// No description provided for @viewEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'View earnings'**
+  String get viewEarnings;
+
+  /// No description provided for @couldNotOpenBrowser.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open browser'**
+  String get couldNotOpenBrowser;
+
+  /// No description provided for @couldNotStartOnboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start onboarding'**
+  String get couldNotStartOnboarding;
 }
 
 class _AppLocalizationsDelegate

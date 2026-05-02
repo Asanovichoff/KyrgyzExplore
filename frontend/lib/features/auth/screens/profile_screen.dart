@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../app/locale_provider.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../features/host/repositories/host_repository.dart';
 import '../models/auth_models.dart';
@@ -49,10 +51,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (updated != null) {
         ref.read(authStateProvider.notifier).updateUser(updated);
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not upload photo: $e')),
+          SnackBar(content: Text(context.l10n.couldNotUploadPhoto)),
         );
       }
     } finally {
@@ -92,13 +94,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (mounted) {
         setState(() => _editing = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated')),
+          SnackBar(content: Text(context.l10n.profileUpdated)),
         );
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not save: $e')),
+          SnackBar(content: Text(context.l10n.couldNotSave)),
         );
       }
     } finally {
@@ -113,18 +115,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(context.l10n.profile),
         actions: [
           if (!_editing)
             IconButton(
               icon: const Icon(Icons.edit_outlined),
-              tooltip: 'Edit',
+              tooltip: context.l10n.edit,
               onPressed: _startEdit,
             )
           else ...[
             TextButton(
               onPressed: _saving ? null : _cancelEdit,
-              child: const Text('Cancel'),
+              child: Text(context.l10n.cancel),
             ),
             TextButton(
               onPressed: _saving ? null : _save,
@@ -134,7 +136,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       width: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save'),
+                  : Text(context.l10n.save),
             ),
           ],
         ],
@@ -227,7 +229,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                user.isHost ? 'Host' : 'Traveler',
+                user.isHost ? context.l10n.host : context.l10n.traveler,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -242,16 +244,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(height: 20),
 
           // Email (always read-only — backend doesn't allow changing it)
-          _ReadOnlyField(label: 'Email', value: user.email),
+          _ReadOnlyField(label: context.l10n.email, value: user.email),
           const SizedBox(height: 16),
 
           // First name
           TextFormField(
             controller: _firstNameCtrl,
             enabled: _editing,
-            decoration: const InputDecoration(
-              labelText: 'First name',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.l10n.firstName,
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
@@ -260,9 +262,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           TextFormField(
             controller: _lastNameCtrl,
             enabled: _editing,
-            decoration: const InputDecoration(
-              labelText: 'Last name',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.l10n.lastName,
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
@@ -272,9 +274,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             controller: _phoneCtrl,
             enabled: _editing,
             keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(
-              labelText: 'Phone (optional)',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: context.l10n.phoneOptional,
+              border: const OutlineInputBorder(),
             ),
           ),
 
@@ -291,7 +293,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text('Save changes'),
+                    : Text(context.l10n.saveChanges),
               ),
             ),
           ],
@@ -305,13 +307,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ],
 
           const SizedBox(height: 32),
+          const Divider(),
+          const SizedBox(height: 8),
+
+          // Language selector
+          _LanguageTile(),
+
+          const SizedBox(height: 24),
 
           // Logout
           OutlinedButton.icon(
             onPressed: () => ref.read(authStateProvider.notifier).logout(),
             icon: const Icon(Icons.logout, color: Colors.red),
-            label:
-                const Text('Log out', style: TextStyle(color: Colors.red)),
+            label: Text(context.l10n.logOut,
+                style: const TextStyle(color: Colors.red)),
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: Colors.red),
             ),
@@ -370,16 +379,16 @@ class _PayoutSettingsCardState extends ConsumerState<_PayoutSettingsCard> {
       if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not open browser')),
+            SnackBar(content: Text(context.l10n.couldNotOpenBrowser)),
           );
         }
       }
       // Re-fetch status when user returns — they may have completed onboarding
       await _fetchStatus();
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not start onboarding: $e')),
+          SnackBar(content: Text(context.l10n.couldNotStartOnboarding)),
         );
       }
     } finally {
@@ -396,7 +405,7 @@ class _PayoutSettingsCardState extends ConsumerState<_PayoutSettingsCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Payout Settings',
+          context.l10n.payoutSettings,
           style: Theme.of(context)
               .textTheme
               .titleSmall
@@ -429,10 +438,10 @@ class _PayoutSettingsCardState extends ConsumerState<_PayoutSettingsCard> {
                           children: [
                             Text(
                               enabled
-                                  ? 'Payouts enabled'
+                                  ? context.l10n.payoutsEnabled
                                   : submitted
-                                      ? 'Verification in progress'
-                                      : 'Not connected',
+                                      ? context.l10n.verificationInProgress
+                                      : context.l10n.notConnected,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
@@ -440,10 +449,10 @@ class _PayoutSettingsCardState extends ConsumerState<_PayoutSettingsCard> {
                             ),
                             Text(
                               enabled
-                                  ? 'You will receive payouts from bookings'
+                                  ? context.l10n.youWillReceivePayouts
                                   : submitted
-                                      ? 'Stripe is reviewing your information'
-                                      : 'Connect Stripe to receive payments',
+                                      ? context.l10n.stripeReviewing
+                                      : context.l10n.connectStripe,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -456,7 +465,7 @@ class _PayoutSettingsCardState extends ConsumerState<_PayoutSettingsCard> {
                         const SizedBox(width: 8),
                         TextButton(
                           onPressed: () => context.pushNamed('payouts'),
-                          child: const Text('View earnings'),
+                          child: Text(context.l10n.viewEarnings),
                         ),
                       ] else ...[
                         const SizedBox(width: 8),
@@ -470,7 +479,7 @@ class _PayoutSettingsCardState extends ConsumerState<_PayoutSettingsCard> {
                                       strokeWidth: 2,
                                       color: Colors.white),
                                 )
-                              : Text(submitted ? 'Continue' : 'Set up'),
+                              : Text(submitted ? context.l10n.continueLabel : context.l10n.setUp),
                         ),
                       ],
                     ],
@@ -478,6 +487,43 @@ class _PayoutSettingsCardState extends ConsumerState<_PayoutSettingsCard> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _LanguageTile extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final current = ref.watch(localeProvider);
+
+    final options = [
+      (locale: null,              label: 'System default'),
+      (locale: const Locale('en'), label: 'English'),
+      (locale: const Locale('ru'), label: 'Русский'),
+      (locale: const Locale('ky'), label: 'Кыргызча'),
+    ];
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: const Icon(Icons.language_outlined),
+      title: Text(context.l10n.language),
+      trailing: DropdownButton<Locale?>(
+        value: current,
+        underline: const SizedBox.shrink(),
+        items: options.map((o) => DropdownMenuItem(
+          value: o.locale,
+          child: Text(o.label),
+        )).toList(),
+        onChanged: (v) => ref.read(localeProvider.notifier).state = v,
+        // Show the selected label rather than the full dropdown value
+        selectedItemBuilder: (_) => options
+            .map((o) => Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(o.label,
+                      style: const TextStyle(fontSize: 14)),
+                ))
+            .toList(),
+      ),
     );
   }
 }
