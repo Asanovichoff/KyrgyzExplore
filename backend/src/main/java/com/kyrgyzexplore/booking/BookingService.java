@@ -75,7 +75,17 @@ public class BookingService {
                 .expiresAt(Instant.now().plus(24, ChronoUnit.HOURS))
                 .build();
 
-        return toResponse(bookingRepository.save(booking));
+        BookingResponse response = toResponse(bookingRepository.save(booking));
+
+        // Notify the host that a booking request is waiting for their action.
+        notificationService.notify(
+                listing.getHostId(),
+                NotificationType.NEW_BOOKING_REQUEST,
+                "New booking request",
+                "A traveler has requested to book \"" + listing.getTitle() + "\".",
+                response.getId());
+
+        return response;
     }
 
     @Transactional

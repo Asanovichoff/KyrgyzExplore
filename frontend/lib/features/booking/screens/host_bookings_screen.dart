@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/models/app_exception.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/booking_model.dart';
 import '../providers/booking_provider.dart';
@@ -17,21 +19,29 @@ class HostBookingsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Manage Bookings')),
       body: bookingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: kGrey),
-              const SizedBox(height: 12),
-              const Text('Could not load bookings'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.invalidate(hostBookingsProvider),
-                child: const Text('Retry'),
-              ),
-            ],
-          ),
-        ),
+        error: (err, _) {
+          String message = 'Could not load bookings';
+          if (err is DioException && err.error is ServerException) {
+            message = (err.error as ServerException).message;
+          } else if (err is DioException && err.error is NetworkException) {
+            message = 'No connection to server';
+          }
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.error_outline, size: 48, color: kGrey),
+                const SizedBox(height: 12),
+                Text(message, textAlign: TextAlign.center),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => ref.invalidate(hostBookingsProvider),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        },
         data: (bookings) {
           if (bookings.isEmpty) {
             return const Center(
