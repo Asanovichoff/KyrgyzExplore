@@ -48,6 +48,9 @@ dependencies:
   # URL launching (Stripe Connect onboarding)
   url_launcher: ^6.3.0
 
+  # Real-time WebSocket chat (STOMP protocol)
+  stomp_dart_client: ^3.0.1
+
   # UI utilities
   intl: ^0.20.2
   shimmer: ^3.0.0

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' hide Card;
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/booking_model.dart';
 import '../providers/booking_provider.dart';
 import '../repositories/booking_repository.dart';
+import '../widgets/review_bottom_sheet.dart';
 
 class MyBookingsScreen extends ConsumerWidget {
   const MyBookingsScreen({super.key});
@@ -51,15 +54,7 @@ class MyBookingsScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               itemCount: bookings.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, i) => _BookingCard(
-                booking: bookings[i],
-                onCancel: () async {
-                  await ref
-                      .read(bookingRepositoryProvider)
-                      .cancel(bookings[i].id);
-                  ref.invalidate(myBookingsProvider);
-                },
-              ),
+              itemBuilder: (context, i) => _BookingCard(booking: bookings[i]),
             ),
           );
         },
@@ -68,18 +63,18 @@ class MyBookingsScreen extends ConsumerWidget {
   }
 }
 
-class _BookingCard extends StatefulWidget {
-  const _BookingCard({required this.booking, required this.onCancel});
+class _BookingCard extends ConsumerStatefulWidget {
+  const _BookingCard({required this.booking});
 
   final BookingModel booking;
-  final Future<void> Function() onCancel;
 
   @override
-  State<_BookingCard> createState() => _BookingCardState();
+  ConsumerState<_BookingCard> createState() => _BookingCardState();
 }
 
-class _BookingCardState extends State<_BookingCard> {
+class _BookingCardState extends ConsumerState<_BookingCard> {
   bool _cancelling = false;
+  bool _paying = false;
 
   String get _dateRange {
     final ci = widget.booking.checkInDate;
@@ -100,18 +95,18 @@ class _BookingCardState extends State<_BookingCard> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child:
-                const Text('Cancel booking', style: TextStyle(color: Colors.red)),
+            child: const Text('Cancel booking',
+                style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
-
     if (confirmed != true) return;
 
     setState(() => _cancelling = true);
     try {
-      await widget.onCancel();
+      await ref.read(bookingRepositoryProvider).cancel(widget.booking.id);
+      ref.invalidate(myBookingsProvider);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -123,11 +118,81 @@ class _BookingCardState extends State<_BookingCard> {
     }
   }
 
+  Future<void> _handlePay() async {
+    setState(() => _paying = true);
+    try {
+      final intent =
+          await ref.read(bookingRepositoryProvider).pay(widget.booking.id);
+
+      // Set the publishable key we got from the server — this is safer than
+      // hardcoding it at app startup because it comes from the same call
+      // that creates the PaymentIntent, so they always match.
+      Stripe.publishableKey = intent.publishableKey;
+
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: intent.clientSecret,
+          merchantDisplayName: 'KyrgyzExplore',
+          style: ThemeMode.system,
+        ),
+      );
+
+      await Stripe.instance.presentPaymentSheet();
+
+      // presentPaymentSheet() throws StripeException on cancel or failure,
+      // so reaching here means the payment was submitted successfully.
+      // The backend webhook will mark the booking PAID asynchronously.
+      ref.invalidate(myBookingsProvider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Payment successful!')),
+        );
+      }
+    } on StripeException catch (e) {
+      if (mounted && e.error.code != FailureCode.Canceled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(e.error.localizedMessage ?? 'Payment failed')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Payment failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _paying = false);
+    }
+  }
+
+  void _handleReview() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ReviewBottomSheet(
+        bookingId: widget.booking.id,
+        onSuccess: () {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Review submitted! Thank you.')),
+            );
+          }
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final booking = widget.booking;
     final canCancel =
         booking.status == 'PENDING' || booking.status == 'CONFIRMED';
+    final canPay = booking.status == 'CONFIRMED';
+    final canReview = booking.status == 'PAID';
+    final canChat =
+        booking.status == 'CONFIRMED' || booking.status == 'PAID';
 
     return Card(
       elevation: 1,
@@ -140,17 +205,41 @@ class _BookingCardState extends State<_BookingCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  _dateRange,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
+                Expanded(
+                  child: Text(
+                    booking.listingTitle ?? 'Booking',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
+                const SizedBox(width: 8),
+                if (canChat)
+                  IconButton(
+                    icon: const Icon(Icons.chat_bubble_outline, size: 20),
+                    tooltip: 'Chat with host',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => context.pushNamed(
+                      'chat',
+                      pathParameters: {'bookingId': booking.id},
+                      extra: booking,
+                    ),
+                  ),
                 _StatusBadge(status: booking.status),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
+            Text(
+              _dateRange,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: kGrey),
+            ),
+            const SizedBox(height: 2),
             Text(
               '${booking.nightCount} night${booking.nightCount == 1 ? '' : 's'}  ·  ${booking.totalPrice.toStringAsFixed(0)} KGS',
               style: Theme.of(context)
@@ -158,22 +247,45 @@ class _BookingCardState extends State<_BookingCard> {
                   .bodySmall
                   ?.copyWith(color: kGrey),
             ),
-            if (canCancel) ...[
+            if (canPay || canCancel || canReview) ...[
               const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: _cancelling ? null : _handleCancel,
-                  child: _cancelling
-                      ? const SizedBox(
-                          height: 16,
-                          width: 16,
-                          child:
-                              CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Cancel',
-                          style: TextStyle(color: Colors.red)),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (canCancel)
+                    TextButton(
+                      onPressed:
+                          (_cancelling || _paying) ? null : _handleCancel,
+                      child: _cancelling
+                          ? const SizedBox(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Cancel',
+                              style: TextStyle(color: Colors.red)),
+                    ),
+                  if (canPay) ...[
+                    const SizedBox(width: 8),
+                    FilledButton(
+                      onPressed: (_paying || _cancelling) ? null : _handlePay,
+                      child: _paying
+                          ? const SizedBox(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white),
+                            )
+                          : const Text('Pay now'),
+                    ),
+                  ],
+                  if (canReview)
+                    OutlinedButton.icon(
+                      onPressed: _handleReview,
+                      icon: const Icon(Icons.star_outline, size: 16),
+                      label: const Text('Leave review'),
+                    ),
+                ],
               ),
             ],
           ],

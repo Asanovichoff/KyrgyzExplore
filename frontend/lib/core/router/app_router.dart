@@ -16,6 +16,8 @@ import '../../features/host/screens/manage_availability_screen.dart';
 import '../../features/host/screens/payout_screen.dart';
 import '../../features/listing/screens/listing_detail_screen.dart';
 import '../../features/notification/screens/notification_screen.dart';
+import '../../features/message/screens/chat_screen.dart';
+import '../../features/booking/models/booking_model.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -99,6 +101,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'payouts',
         path: '/host/payouts',
         builder: (_, __) => const PayoutScreen(),
+      ),
+      GoRoute(
+        name: 'chat',
+        path: '/chat/:bookingId',
+        builder: (_, state) => ChatScreen(
+          booking: state.extra as BookingModel,
+        ),
       ),
     ],
   );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/booking_model.dart';
 import '../providers/booking_provider.dart';
@@ -63,7 +64,7 @@ class HostBookingsScreen extends ConsumerWidget {
   }
 }
 
-class _HostBookingCard extends StatefulWidget {
+class _HostBookingCard extends ConsumerStatefulWidget {
   const _HostBookingCard({
     required this.booking,
     required this.onRefresh,
@@ -73,10 +74,10 @@ class _HostBookingCard extends StatefulWidget {
   final VoidCallback onRefresh;
 
   @override
-  State<_HostBookingCard> createState() => _HostBookingCardState();
+  ConsumerState<_HostBookingCard> createState() => _HostBookingCardState();
 }
 
-class _HostBookingCardState extends State<_HostBookingCard> {
+class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
   bool _loading = false;
 
   String get _dateRange {
@@ -85,13 +86,13 @@ class _HostBookingCardState extends State<_HostBookingCard> {
     return '${ci.day}/${ci.month}/${ci.year} → ${co.day}/${co.month}/${co.year}';
   }
 
-  Future<void> _confirm(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirm() async {
     setState(() => _loading = true);
     try {
       await ref.read(bookingRepositoryProvider).confirm(widget.booking.id);
       widget.onRefresh();
     } catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
@@ -100,8 +101,8 @@ class _HostBookingCardState extends State<_HostBookingCard> {
     }
   }
 
-  Future<void> _reject(BuildContext context, WidgetRef ref) async {
-    final reason = await _showRejectDialog(context);
+  Future<void> _reject() async {
+    final reason = await _showRejectDialog();
     if (reason == null) return;
 
     setState(() => _loading = true);
@@ -111,7 +112,7 @@ class _HostBookingCardState extends State<_HostBookingCard> {
           .reject(widget.booking.id, reason);
       widget.onRefresh();
     } catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('Error: $e')));
       }
@@ -120,7 +121,7 @@ class _HostBookingCardState extends State<_HostBookingCard> {
     }
   }
 
-  Future<String?> _showRejectDialog(BuildContext context) async {
+  Future<String?> _showRejectDialog() async {
     final controller = TextEditingController();
     return showDialog<String>(
       context: context,
@@ -157,94 +158,105 @@ class _HostBookingCardState extends State<_HostBookingCard> {
   Widget build(BuildContext context) {
     final booking = widget.booking;
     final isPending = booking.status == 'PENDING';
+    final canChat =
+        booking.status == 'CONFIRMED' || booking.status == 'PAID';
 
-    return Consumer(
-      builder: (context, ref, _) => Card(
-        elevation: 1,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      booking.listingTitle ?? 'Listing',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                      overflow: TextOverflow.ellipsis,
+    return Card(
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    booking.listingTitle ?? 'Listing',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if (canChat)
+                  IconButton(
+                    icon: const Icon(Icons.chat_bubble_outline, size: 20),
+                    tooltip: 'Chat with guest',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => context.pushNamed(
+                      'chat',
+                      pathParameters: {'bookingId': booking.id},
+                      extra: booking,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  _StatusBadge(status: booking.status),
-                ],
-              ),
+                _StatusBadge(status: booking.status),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              _dateRange,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: kGrey),
+            ),
+            Text(
+              '${booking.numberOfGuests} guest${booking.numberOfGuests == 1 ? '' : 's'}  ·  ${booking.totalPrice.toStringAsFixed(0)} KGS',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(color: kGrey),
+            ),
+            if (booking.guestMessage != null &&
+                booking.guestMessage!.isNotEmpty) ...[
               const SizedBox(height: 6),
               Text(
-                _dateRange,
+                '"${booking.guestMessage}"',
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
-                    ?.copyWith(color: kGrey),
+                    ?.copyWith(fontStyle: FontStyle.italic),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              Text(
-                '${booking.numberOfGuests} guest${booking.numberOfGuests == 1 ? '' : 's'}  ·  ${booking.totalPrice.toStringAsFixed(0)} KGS',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(color: kGrey),
-              ),
-              if (booking.guestMessage != null &&
-                  booking.guestMessage!.isNotEmpty) ...[
-                const SizedBox(height: 6),
-                Text(
-                  '"${booking.guestMessage}"',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(fontStyle: FontStyle.italic),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-              if (isPending) ...[
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (_loading)
-                      const SizedBox(
-                        height: 24,
-                        width: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    else ...[
-                      OutlinedButton(
-                        onPressed: () => _reject(context, ref),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red,
-                          side: const BorderSide(color: Colors.red),
-                        ),
-                        child: const Text('Reject'),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () => _confirm(context, ref),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: kTeal,
-                            foregroundColor: Colors.white),
-                        child: const Text('Confirm'),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
             ],
-          ),
+            if (isPending) ...[
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (_loading)
+                    const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  else ...[
+                    OutlinedButton(
+                      onPressed: _reject,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                      ),
+                      child: const Text('Reject'),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: _confirm,
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: kTeal,
+                          foregroundColor: Colors.white),
+                      child: const Text('Confirm'),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ],
         ),
       ),
     );

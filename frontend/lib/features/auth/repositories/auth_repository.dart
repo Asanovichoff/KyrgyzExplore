@@ -58,6 +58,11 @@ class AuthRepository {
     return UserModel.fromJson(response.data['data'] as Map<String, dynamic>);
   }
 
+  /// Exposes the stored JWT so the WebSocket client can attach it to the
+  /// STOMP CONNECT frame. The token is short-lived; callers should fetch it
+  /// fresh before opening each WebSocket connection.
+  Future<String?> getAccessToken() => _storage.read(key: _kAccessToken);
+
   Future<void> _saveTokens(TokenPair pair) async {
     await _storage.write(key: _kAccessToken,  value: pair.accessToken);
     await _storage.write(key: _kRefreshToken, value: pair.refreshToken);
