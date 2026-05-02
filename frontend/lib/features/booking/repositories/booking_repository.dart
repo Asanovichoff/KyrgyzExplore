@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_client.dart';
 import '../models/booking_model.dart';
+import '../models/payment_intent_model.dart';
 
 final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
   return BookingRepository(dio: ref.read(dioProvider));
@@ -67,6 +68,11 @@ class BookingRepository {
       data: {'reason': reason},
     );
     return BookingModel.fromJson(res.data['data'] as Map<String, dynamic>);
+  }
+
+  Future<PaymentIntentModel> pay(String bookingId) async {
+    final res = await _dio.post('/bookings/$bookingId/pay');
+    return PaymentIntentModel.fromJson(res.data['data'] as Map<String, dynamic>);
   }
 
   // Formats a DateTime to "yyyy-MM-dd" as expected by the backend LocalDate.

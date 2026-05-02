@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../explore/models/listing_model.dart';
+import '../../../shared/models/listing_model.dart';
 import '../repositories/host_repository.dart';
 
 final myListingsProvider = FutureProvider.autoDispose<List<ListingModel>>(

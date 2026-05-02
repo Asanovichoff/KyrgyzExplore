@@ -2,7 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../core/theme/app_colors.dart';
-import '../models/listing_model.dart';
+import '../../../shared/models/listing_model.dart';
+import '../../../shared/widgets/type_badge.dart';
 
 class ListingCard extends StatelessWidget {
   const ListingCard({super.key, required this.listing, this.onTap});
@@ -75,7 +76,7 @@ class _CoverImage extends StatelessWidget {
         Positioned(
           top: 8,
           left: 8,
-          child: _TypeBadge(type: type),
+          child: TypeBadge(type: type, filled: true),
         ),
       ],
     );
@@ -91,43 +92,6 @@ class _ImagePlaceholder extends StatelessWidget {
       color: kLight,
       child: const Center(
         child: Icon(Icons.image_outlined, color: kGrey, size: 40),
-      ),
-    );
-  }
-}
-
-class _TypeBadge extends StatelessWidget {
-  const _TypeBadge({required this.type});
-
-  final String type;
-
-  static const _labels = {
-    'HOUSE': 'House',
-    'CAR': 'Car',
-    'ACTIVITY': 'Activity',
-  };
-
-  static const _colors = {
-    'HOUSE': kNavy,
-    'CAR': kTeal,
-    'ACTIVITY': Color(0xFFE65100),
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: (_colors[type] ?? kNavy).withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        _labels[type] ?? type,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-        ),
       ),
     );
   }

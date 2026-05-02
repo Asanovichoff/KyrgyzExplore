@@ -54,14 +54,18 @@ class UserModel {
     required this.firstName,
     required this.lastName,
     required this.role,
+    this.phone,
+    this.profileImageUrl,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-    id:        json['id']        as String,
-    email:     json['email']     as String,
-    firstName: json['firstName'] as String,
-    lastName:  json['lastName']  as String,
-    role:      json['role']      as String,
+    id:              json['id']              as String,
+    email:           json['email']           as String,
+    firstName:       json['firstName']       as String,
+    lastName:        json['lastName']        as String,
+    role:            json['role']            as String,
+    phone:           json['phone']           as String?,
+    profileImageUrl: json['profileImageUrl'] as String?,
   );
 
   final String id;
@@ -69,8 +73,25 @@ class UserModel {
   final String firstName;
   final String lastName;
   final String role;
+  final String? phone;
+  final String? profileImageUrl;
 
   bool get isHost => role == 'HOST';
 
   String get fullName => '$firstName $lastName';
+
+  UserModel copyWith({
+    String? firstName,
+    String? lastName,
+    String? phone,
+  }) =>
+      UserModel(
+        id: id,
+        email: email,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        role: role,
+        phone: phone ?? this.phone,
+        profileImageUrl: profileImageUrl,
+      );
 }

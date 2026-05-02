@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_client.dart';
 import '../../listing/models/review_model.dart';
-import '../models/listing_model.dart';
+import '../../../shared/models/listing_model.dart';
 import '../models/search_params.dart';
 
 final exploreRepositoryProvider = Provider<ExploreRepository>((ref) {
@@ -23,6 +23,12 @@ class ExploreRepository {
       'page': params.page,
       'size': 20,
       if (params.type != null) 'type': params.type,
+      if (params.minPrice != null) 'minPrice': params.minPrice,
+      if (params.maxPrice != null) 'maxPrice': params.maxPrice,
+      if (params.minGuests != null) 'minGuests': params.minGuests,
+      if (params.city != null && params.city!.isNotEmpty) 'city': params.city,
+      if (params.checkIn != null) 'checkIn': _fmtDate(params.checkIn!),
+      if (params.checkOut != null) 'checkOut': _fmtDate(params.checkOut!),
     };
 
     final response = await _dio.get(
@@ -51,6 +57,9 @@ class ExploreRepository {
     return List<String>.from(
         (res.data['data']['blockedDates'] as List<dynamic>));
   }
+
+  String _fmtDate(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   Future<List<ReviewModel>> getReviews(String id) async {
     final res = await _dio.get(

@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/listing_model.dart';
+import '../../../shared/models/listing_model.dart';
 import '../models/search_params.dart';
 import '../repositories/explore_repository.dart';
 

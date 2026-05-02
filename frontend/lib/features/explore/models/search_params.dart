@@ -6,6 +6,12 @@ class SearchParams {
     required this.sort,
     required this.page,
     this.type,
+    this.minPrice,
+    this.maxPrice,
+    this.minGuests,
+    this.city,
+    this.checkIn,
+    this.checkOut,
   });
 
   // Bishkek city centre — used as the default until real GPS is wired up.
@@ -25,6 +31,25 @@ class SearchParams {
 
   /// null = all types; "HOUSE" | "CAR" | "ACTIVITY"
   final String? type;
+  final double? minPrice;
+  final double? maxPrice;
+  final int? minGuests;
+  final String? city;
+  final DateTime? checkIn;
+  final DateTime? checkOut;
+
+  /// Number of active filter values (excludes type, which has its own chips).
+  int get activeFilterCount {
+    int n = 0;
+    if (minPrice != null) n++;
+    if (maxPrice != null) n++;
+    if (minGuests != null) n++;
+    if (city != null && city!.isNotEmpty) n++;
+    if (checkIn != null) n++;
+    if (checkOut != null) n++;
+    if (sort != 'distance') n++;
+    return n;
+  }
 
   SearchParams copyWith({
     double? lat,
@@ -32,7 +57,14 @@ class SearchParams {
     double? radiusKm,
     String? sort,
     int? page,
+    // Use sentinel so callers can explicitly pass null to CLEAR an optional filter.
     Object? type = _sentinel,
+    Object? minPrice = _sentinel,
+    Object? maxPrice = _sentinel,
+    Object? minGuests = _sentinel,
+    Object? city = _sentinel,
+    Object? checkIn = _sentinel,
+    Object? checkOut = _sentinel,
   }) {
     return SearchParams(
       lat: lat ?? this.lat,
@@ -40,11 +72,16 @@ class SearchParams {
       radiusKm: radiusKm ?? this.radiusKm,
       sort: sort ?? this.sort,
       page: page ?? this.page,
-      // Special sentinel so callers can explicitly pass type: null to clear the filter
       type: type == _sentinel ? this.type : type as String?,
+      minPrice: minPrice == _sentinel ? this.minPrice : minPrice as double?,
+      maxPrice: maxPrice == _sentinel ? this.maxPrice : maxPrice as double?,
+      minGuests: minGuests == _sentinel ? this.minGuests : minGuests as int?,
+      city: city == _sentinel ? this.city : city as String?,
+      checkIn: checkIn == _sentinel ? this.checkIn : checkIn as DateTime?,
+      checkOut: checkOut == _sentinel ? this.checkOut : checkOut as DateTime?,
     );
   }
 }
 
-// Sentinel object to distinguish "not passed" from "explicitly null"
+// Sentinel object used by copyWith to distinguish "not passed" from "explicitly null".
 const _sentinel = Object();

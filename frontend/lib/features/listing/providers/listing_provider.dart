@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../explore/repositories/explore_repository.dart';
-import '../../explore/models/listing_model.dart';
+import '../../../shared/models/listing_model.dart';
 import '../models/review_model.dart';
 
 final listingDetailProvider = FutureProvider.autoDispose

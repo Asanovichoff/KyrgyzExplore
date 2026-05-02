@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../explore/models/listing_model.dart';
+import '../../../shared/models/listing_model.dart';
 
 class PhotoGallery extends StatefulWidget {
   const PhotoGallery({super.key, required this.images});
