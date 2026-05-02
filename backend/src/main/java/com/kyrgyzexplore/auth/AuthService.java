@@ -1,5 +1,6 @@
 package com.kyrgyzexplore.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kyrgyzexplore.auth.dto.AuthResponse;
 import com.kyrgyzexplore.auth.dto.LoginRequest;
 import com.kyrgyzexplore.auth.dto.RegisterRequest;
@@ -9,6 +10,9 @@ import com.kyrgyzexplore.user.User;
 import com.kyrgyzexplore.user.UserRepository;
 import com.kyrgyzexplore.user.UserRole;
 import com.kyrgyzexplore.user.dto.UserResponse;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,7 +22,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigInteger;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
 import java.time.Instant;
+import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -31,6 +43,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     public AuthResponse register(RegisterRequest req) {
@@ -153,6 +166,107 @@ public class AuthService {
                     .lastName(lastName)
                     .role(UserRole.TRAVELER)
                     .profileImageUrl(picture)
+                    .build();
+            return userRepository.save(newUser);
+        });
+
+        if (!user.isEnabled()) {
+            throw new AppException(HttpStatus.FORBIDDEN, "ACCOUNT_SUSPENDED",
+                    "Your account has been suspended");
+        }
+
+        return buildAuthResponse(user);
+    }
+
+    /**
+     * Authenticates a user via Apple Sign-In.
+     *
+     * WHY verify Apple tokens with JWKS instead of Apple's tokeninfo endpoint?
+     * Apple does not provide a simple tokeninfo HTTP call like Google. Apple
+     * identity tokens are signed JWTs — we must fetch Apple's public keys (JWKS),
+     * find the key matching the token's `kid` header, reconstruct the RSA public key
+     * from its modulus (n) and exponent (e), then verify the signature with JJWT.
+     *
+     * WHY parse the JWT header manually before calling JJWT?
+     * JJWT needs the public key up front (unlike asymmetric server-side verification
+     * where the key is implicit). We peek at the `kid` claim in the header first so
+     * we can select the right Apple key before handing the full token to JJWT.
+     */
+    @Transactional
+    public AuthResponse loginWithApple(String identityToken) {
+        // 1. Peek at the JWT header to get the key ID (kid)
+        String[] parts = identityToken.split("\\.");
+        if (parts.length != 3) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, "INVALID_APPLE_TOKEN", "Malformed Apple token");
+        }
+        Map<?, ?> header;
+        try {
+            String headerJson = new String(Base64.getUrlDecoder().decode(parts[0]));
+            header = objectMapper.readValue(headerJson, Map.class);
+        } catch (Exception e) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, "INVALID_APPLE_TOKEN", "Could not decode Apple token header");
+        }
+        String kid = String.valueOf(header.get("kid"));
+
+        // 2. Fetch Apple's JWKS (public signing keys)
+        RestTemplate rest = new RestTemplate();
+        Map<?, ?> jwks;
+        try {
+            jwks = rest.getForObject("https://appleid.apple.com/auth/keys", Map.class);
+        } catch (RestClientException e) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, "INVALID_APPLE_TOKEN", "Could not fetch Apple public keys");
+        }
+        if (jwks == null) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, "INVALID_APPLE_TOKEN", "Empty JWKS response from Apple");
+        }
+
+        // 3. Find the key whose kid matches the token header
+        List<?> keys = (List<?>) jwks.get("keys");
+        @SuppressWarnings("unchecked")
+        Map<String, Object> matchedKey = (Map<String, Object>) keys.stream()
+                .filter(k -> kid.equals(((Map<?, ?>) k).get("kid")))
+                .findFirst()
+                .orElseThrow(() -> new AppException(HttpStatus.UNAUTHORIZED,
+                        "INVALID_APPLE_TOKEN", "No matching Apple key found for kid: " + kid));
+
+        // 4. Reconstruct RSA public key from the JWKS modulus (n) and exponent (e).
+        //    Both are Base64url-encoded big-endian byte arrays per the JWKS spec (RFC 7517).
+        PublicKey publicKey;
+        try {
+            BigInteger modulus  = new BigInteger(1, Base64.getUrlDecoder().decode((String) matchedKey.get("n")));
+            BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode((String) matchedKey.get("e")));
+            publicKey = KeyFactory.getInstance("RSA").generatePublic(new RSAPublicKeySpec(modulus, exponent));
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new AppException(HttpStatus.INTERNAL_SERVER_ERROR, "KEY_BUILD_FAILED", "Could not build Apple public key");
+        }
+
+        // 5. Verify the token signature and parse claims with JJWT
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .verifyWith((java.security.PublicKey) publicKey)
+                    .build()
+                    .parseSignedClaims(identityToken)
+                    .getPayload();
+        } catch (JwtException e) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, "INVALID_APPLE_TOKEN", "Apple token verification failed");
+        }
+
+        String email = claims.get("email", String.class);
+        if (email == null) {
+            throw new AppException(HttpStatus.UNAUTHORIZED, "INVALID_APPLE_TOKEN",
+                    "No email in Apple token — user may have hidden their email");
+        }
+
+        User user = userRepository.findByEmail(email.toLowerCase()).orElseGet(() -> {
+            // Apple only provides the user's name on the very first sign-in.
+            // We store a placeholder; the user can update it via their profile.
+            User newUser = User.builder()
+                    .email(email.toLowerCase())
+                    .passwordHash(UUID.randomUUID().toString()) // never used — social login only
+                    .firstName("Apple")
+                    .lastName("User")
+                    .role(UserRole.TRAVELER)
                     .build();
             return userRepository.save(newUser);
         });

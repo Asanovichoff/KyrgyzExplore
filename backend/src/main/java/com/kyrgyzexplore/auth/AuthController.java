@@ -1,5 +1,6 @@
 package com.kyrgyzexplore.auth;
 
+import com.kyrgyzexplore.auth.dto.AppleLoginRequest;
 import com.kyrgyzexplore.auth.dto.AuthResponse;
 import com.kyrgyzexplore.auth.dto.GoogleLoginRequest;
 import com.kyrgyzexplore.auth.dto.LoginRequest;
@@ -48,6 +49,12 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> loginWithGoogle(
             @Valid @RequestBody GoogleLoginRequest request) {
         return ResponseEntity.ok(ApiResponse.ok(authService.loginWithGoogle(request.getIdToken())));
+    }
+
+    @PostMapping("/login/apple")
+    public ResponseEntity<ApiResponse<AuthResponse>> loginWithApple(
+            @Valid @RequestBody AppleLoginRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok(authService.loginWithApple(request.getIdentityToken())));
     }
 
     @PostMapping("/logout")
