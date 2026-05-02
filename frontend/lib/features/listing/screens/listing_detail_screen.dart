@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/type_badge.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../providers/listing_provider.dart';
 import '../widgets/availability_calendar.dart';
 import '../widgets/photo_gallery.dart';
@@ -76,7 +78,7 @@ class ListingDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          _TypeBadge(type: listing.type),
+                          TypeBadge(type: listing.type),
                           const SizedBox(width: 8),
                           if (listing.city != null)
                             Row(
@@ -162,57 +164,61 @@ class ListingDetailScreen extends ConsumerWidget {
             ],
           ),
 
-          // Sticky Book Now bar
-          bottomNavigationBar: SafeArea(
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 8,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${listing.currency} ${listing.pricePerUnit.toStringAsFixed(0)}',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: kNavy,
-                              fontWeight: FontWeight.bold,
+          // Only travelers can book — hosts manage listings from their dashboard.
+          // Showing the button to a host would just produce a confusing 403.
+          bottomNavigationBar: ref.watch(authStateProvider).valueOrNull?.isHost == true
+              ? null
+              : SafeArea(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 8,
+                          offset: const Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${listing.currency} ${listing.pricePerUnit.toStringAsFixed(0)}',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: kNavy,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
-                      ),
-                      Text(
-                        priceLabel,
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: kGrey),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => context.push(
-                        '/listings/$listingId/book',
-                        extra: listing,
-                      ),
-                      child: const Text('Book Now'),
+                            Text(
+                              priceLabel,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(color: kGrey),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => context.pushNamed(
+                              'booking-request',
+                              pathParameters: {'listingId': listingId},
+                              extra: listing,
+                            ),
+                            child: const Text('Book Now'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
+                ),
         );
       },
     );
@@ -254,37 +260,6 @@ class _ReviewsSection extends ConsumerWidget {
           },
         ),
       ],
-    );
-  }
-}
-
-class _TypeBadge extends StatelessWidget {
-  const _TypeBadge({required this.type});
-
-  final String type;
-
-  static const _labels = {
-    'HOUSE': 'House',
-    'CAR': 'Car',
-    'ACTIVITY': 'Activity',
-  };
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: kLight,
-        border: Border.all(color: kTeal),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        _labels[type] ?? type,
-        style: Theme.of(context)
-            .textTheme
-            .labelSmall
-            ?.copyWith(color: kTeal, fontWeight: FontWeight.w600),
-      ),
     );
   }
 }

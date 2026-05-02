@@ -1,7 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/models/app_exception.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../explore/models/listing_model.dart';
+import '../../../shared/models/listing_model.dart';
+import '../providers/booking_provider.dart';
 import '../repositories/booking_repository.dart';
 
 class BookingRequestScreen extends ConsumerStatefulWidget {
@@ -65,6 +68,16 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
     });
   }
 
+  String _errorMessage(Object e) {
+    if (e is DioException && e.error is ServerException) {
+      return (e.error as ServerException).message;
+    }
+    if (e is DioException && e.error is NetworkException) {
+      return 'Could not reach the server. Check your connection.';
+    }
+    return 'Something went wrong. Please try again.';
+  }
+
   Future<void> _submit() async {
     if (_checkIn == null || _checkOut == null) {
       setState(() => _error = 'Please select check-in and check-out dates.');
@@ -91,6 +104,8 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
                 : _messageController.text.trim(),
           );
 
+      ref.invalidate(myBookingsProvider);
+
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -99,7 +114,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
         ),
       );
     } catch (e) {
-      setState(() => _error = e.toString());
+      setState(() => _error = _errorMessage(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
