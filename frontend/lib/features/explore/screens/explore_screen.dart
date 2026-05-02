@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/navigation/main_shell.dart';
 import '../../../core/theme/app_colors.dart';
-import '../../../features/auth/providers/auth_provider.dart';
 import '../models/search_params.dart';
 import '../providers/explore_provider.dart';
-import '../../notification/providers/notification_provider.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/listing_card.dart';
 
@@ -23,35 +22,12 @@ class ExploreScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final params  = ref.watch(searchParamsProvider);
     final results = ref.watch(searchResultsProvider);
-    final user    = ref.watch(authStateProvider).valueOrNull;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Explore'),
         actions: [
-          if (user?.isHost == true) ...[
-            IconButton(
-              icon: const Icon(Icons.home_work_outlined),
-              tooltip: 'My Listings',
-              onPressed: () => context.pushNamed('host-listings'),
-            ),
-            IconButton(
-              icon: const Icon(Icons.dashboard_outlined),
-              tooltip: 'Manage Bookings',
-              onPressed: () => context.pushNamed('host-bookings'),
-            ),
-          ],
-          IconButton(
-            icon: const Icon(Icons.receipt_long_outlined),
-            tooltip: 'My Bookings',
-            onPressed: () => context.pushNamed('my-bookings'),
-          ),
-          _NotificationBell(),
-          IconButton(
-            icon: const Icon(Icons.person_outline),
-            tooltip: 'Profile',
-            onPressed: () => context.pushNamed('profile'),
-          ),
+          const NotificationBellAction(),
           Badge(
             isLabelVisible: params.activeFilterCount > 0,
             label: Text('${params.activeFilterCount}'),
@@ -80,7 +56,8 @@ class ExploreScreen extends ConsumerWidget {
           Expanded(
             child: results.when(
               loading: () => _LoadingGrid(),
-              error: (err, _) => _ErrorView(onRetry: () => ref.invalidate(searchResultsProvider)),
+              error: (err, _) => _ErrorView(
+                  onRetry: () => ref.invalidate(searchResultsProvider)),
               data: (listings) {
                 return RefreshIndicator(
                   onRefresh: () async => ref.invalidate(searchResultsProvider),
@@ -110,8 +87,12 @@ class ExploreScreen extends ConsumerWidget {
                               itemCount: listings.length,
                               itemBuilder: (context, index) => ListingCard(
                                 listing: listings[index],
-                                onTap: () => context
-                                    .pushNamed('listing-detail', pathParameters: {'listingId': listings[index].id}),
+                                onTap: () => context.pushNamed(
+                                  'listing-detail',
+                                  pathParameters: {
+                                    'listingId': listings[index].id
+                                  },
+                                ),
                               ),
                             );
                           },
@@ -215,27 +196,6 @@ class _ErrorView extends StatelessWidget {
             label: const Text('Retry'),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// Reads the unread count and wraps the bell icon in a Badge.
-// Uses a separate ConsumerWidget so only this tiny widget rebuilds when the
-// count changes, not the entire ExploreScreen.
-class _NotificationBell extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final countAsync = ref.watch(unreadCountProvider);
-    final count = countAsync.valueOrNull ?? 0;
-
-    return Badge(
-      isLabelVisible: count > 0,
-      label: Text('$count'),
-      child: IconButton(
-        icon: const Icon(Icons.notifications_outlined),
-        tooltip: 'Notifications',
-        onPressed: () => context.pushNamed('notifications'),
       ),
     );
   }

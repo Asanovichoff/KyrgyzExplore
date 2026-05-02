@@ -9,6 +9,7 @@ import '../../features/explore/screens/explore_screen.dart';
 import '../../features/booking/screens/booking_request_screen.dart';
 import '../../features/booking/screens/host_bookings_screen.dart';
 import '../../features/booking/screens/my_bookings_screen.dart';
+import '../../features/booking/models/booking_model.dart';
 import '../../shared/models/listing_model.dart';
 import '../../features/host/screens/create_edit_listing_screen.dart';
 import '../../features/host/screens/host_listings_screen.dart';
@@ -17,7 +18,7 @@ import '../../features/host/screens/payout_screen.dart';
 import '../../features/listing/screens/listing_detail_screen.dart';
 import '../../features/notification/screens/notification_screen.dart';
 import '../../features/message/screens/chat_screen.dart';
-import '../../features/booking/models/booking_model.dart';
+import '../navigation/main_shell.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -36,9 +37,71 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(name: 'home',     path: '/',              builder: (_, __) => const ExploreScreen()),
+      // Auth screens — no bottom nav bar.
       GoRoute(name: 'login',    path: '/auth/login',    builder: (_, __) => const LoginScreen()),
       GoRoute(name: 'register', path: '/auth/register', builder: (_, __) => const RegisterScreen()),
+
+      // All main screens share the bottom navigation bar via ShellRoute.
+      ShellRoute(
+        builder: (_, __, child) => MainShell(child: child),
+        routes: [
+          GoRoute(
+            name: 'home',
+            path: '/',
+            builder: (_, __) => const ExploreScreen(),
+          ),
+          GoRoute(
+            name: 'my-bookings',
+            path: '/bookings',
+            builder: (_, __) => const MyBookingsScreen(),
+          ),
+          GoRoute(
+            name: 'host-bookings',
+            path: '/host/bookings',
+            builder: (_, __) => const HostBookingsScreen(),
+          ),
+          GoRoute(
+            name: 'host-listings',
+            path: '/host/listings',
+            builder: (_, __) => const HostListingsScreen(),
+            routes: [
+              GoRoute(
+                name: 'host-listings-new',
+                path: 'new',
+                builder: (_, __) => const CreateEditListingScreen(),
+              ),
+              GoRoute(
+                name: 'host-listings-edit',
+                path: ':id/edit',
+                builder: (_, state) => CreateEditListingScreen(
+                  listing: state.extra as ListingModel,
+                ),
+              ),
+              GoRoute(
+                name: 'host-availability',
+                path: ':id/availability',
+                builder: (_, state) => ManageAvailabilityScreen(
+                  listing: state.extra as ListingModel,
+                ),
+              ),
+            ],
+          ),
+          GoRoute(
+            name: 'profile',
+            path: '/profile',
+            builder: (_, __) => const ProfileScreen(),
+            routes: [
+              GoRoute(
+                name: 'payouts',
+                path: 'payouts',
+                builder: (_, __) => const PayoutScreen(),
+              ),
+            ],
+          ),
+        ],
+      ),
+
+      // Full-screen flows — no bottom nav bar (pushed on top of the shell).
       GoRoute(
         name: 'listing-detail',
         path: '/listings/:listingId',
@@ -54,53 +117,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        name: 'my-bookings',
-        path: '/bookings',
-        builder: (_, __) => const MyBookingsScreen(),
-      ),
-      GoRoute(
-        name: 'host-bookings',
-        path: '/host/bookings',
-        builder: (_, __) => const HostBookingsScreen(),
-      ),
-      GoRoute(
-        name: 'host-listings',
-        path: '/host/listings',
-        builder: (_, __) => const HostListingsScreen(),
-      ),
-      GoRoute(
-        name: 'host-listings-new',
-        path: '/host/listings/new',
-        builder: (_, __) => const CreateEditListingScreen(),
-      ),
-      GoRoute(
-        name: 'host-listings-edit',
-        path: '/host/listings/:id/edit',
-        builder: (_, state) => CreateEditListingScreen(
-          listing: state.extra as ListingModel,
-        ),
-      ),
-      GoRoute(
-        name: 'profile',
-        path: '/profile',
-        builder: (_, __) => const ProfileScreen(),
-      ),
-      GoRoute(
-        name: 'host-availability',
-        path: '/host/listings/:id/availability',
-        builder: (_, state) => ManageAvailabilityScreen(
-          listing: state.extra as ListingModel,
-        ),
-      ),
-      GoRoute(
         name: 'notifications',
         path: '/notifications',
         builder: (_, __) => const NotificationScreen(),
-      ),
-      GoRoute(
-        name: 'payouts',
-        path: '/host/payouts',
-        builder: (_, __) => const PayoutScreen(),
       ),
       GoRoute(
         name: 'chat',
@@ -113,8 +132,6 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-// GoRouter needs a Listenable to know when to re-evaluate redirects.
-// We wrap the Riverpod notifier in a ChangeNotifier adapter.
 class _AuthNotifierListenable extends ChangeNotifier {
   _AuthNotifierListenable(Ref ref) {
     ref.listen(authStateProvider, (_, __) => notifyListeners());
