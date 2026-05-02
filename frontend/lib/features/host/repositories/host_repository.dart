@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_client.dart';
 import '../../../shared/models/listing_model.dart';
 import '../models/listing_form_models.dart';
+import '../models/payout_model.dart';
 
 final hostRepositoryProvider = Provider<HostRepository>((ref) {
   return HostRepository(dio: ref.read(dioProvider));
@@ -69,6 +70,19 @@ class HostRepository {
 
   Future<void> deleteImage(String listingId, String imageId) async {
     await _dio.delete('/listings/$listingId/images/$imageId');
+  }
+
+  // ── Payouts ────────────────────────────────────────────────────────────────
+
+  Future<List<PayoutModel>> getPayouts({int page = 0, int size = 50}) async {
+    final res = await _dio.get(
+      '/payouts',
+      queryParameters: {'page': page, 'size': size},
+    );
+    final content = res.data['data']['content'] as List<dynamic>;
+    return content
+        .map((e) => PayoutModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   // ── Stripe Connect ─────────────────────────────────────────────────────────

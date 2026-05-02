@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../features/host/repositories/host_repository.dart';
@@ -385,7 +386,13 @@ class _PayoutSettingsCardState extends ConsumerState<_PayoutSettingsCard> {
                           ],
                         ),
                       ),
-                      if (!enabled) ...[
+                      if (enabled) ...[
+                        const SizedBox(width: 8),
+                        TextButton(
+                          onPressed: () => context.pushNamed('payouts'),
+                          child: const Text('View earnings'),
+                        ),
+                      ] else ...[
                         const SizedBox(width: 8),
                         FilledButton(
                           onPressed: _launching ? null : _openOnboarding,

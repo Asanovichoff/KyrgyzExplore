@@ -13,7 +13,9 @@ import '../../shared/models/listing_model.dart';
 import '../../features/host/screens/create_edit_listing_screen.dart';
 import '../../features/host/screens/host_listings_screen.dart';
 import '../../features/host/screens/manage_availability_screen.dart';
+import '../../features/host/screens/payout_screen.dart';
 import '../../features/listing/screens/listing_detail_screen.dart';
+import '../../features/notification/screens/notification_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -87,6 +89,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => ManageAvailabilityScreen(
           listing: state.extra as ListingModel,
         ),
+      ),
+      GoRoute(
+        name: 'notifications',
+        path: '/notifications',
+        builder: (_, __) => const NotificationScreen(),
+      ),
+      GoRoute(
+        name: 'payouts',
+        path: '/host/payouts',
+        builder: (_, __) => const PayoutScreen(),
       ),
     ],
   );

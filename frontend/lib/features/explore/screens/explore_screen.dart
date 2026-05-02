@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../models/search_params.dart';
 import '../providers/explore_provider.dart';
+import '../../notification/providers/notification_provider.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/listing_card.dart';
 
@@ -44,6 +45,12 @@ class ExploreScreen extends ConsumerWidget {
             icon: const Icon(Icons.receipt_long_outlined),
             tooltip: 'My Bookings',
             onPressed: () => context.pushNamed('my-bookings'),
+          ),
+          _NotificationBell(),
+          IconButton(
+            icon: const Icon(Icons.person_outline),
+            tooltip: 'Profile',
+            onPressed: () => context.pushNamed('profile'),
           ),
           Badge(
             isLabelVisible: params.activeFilterCount > 0,
@@ -208,6 +215,27 @@ class _ErrorView extends StatelessWidget {
             label: const Text('Retry'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Reads the unread count and wraps the bell icon in a Badge.
+// Uses a separate ConsumerWidget so only this tiny widget rebuilds when the
+// count changes, not the entire ExploreScreen.
+class _NotificationBell extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final countAsync = ref.watch(unreadCountProvider);
+    final count = countAsync.valueOrNull ?? 0;
+
+    return Badge(
+      isLabelVisible: count > 0,
+      label: Text('$count'),
+      child: IconButton(
+        icon: const Icon(Icons.notifications_outlined),
+        tooltip: 'Notifications',
+        onPressed: () => context.pushNamed('notifications'),
       ),
     );
   }
