@@ -121,5 +121,17 @@
   "connectStripe": "Connect Stripe to receive payments",
   "viewEarnings": "View earnings",
   "couldNotOpenBrowser": "Could not open browser",
-  "couldNotStartOnboarding": "Could not start onboarding"
+  "couldNotStartOnboarding": "Could not start onboarding",
+
+  "earningsTitle": "Earnings",
+  "totalEarned": "Total earned",
+  "noEarningsYet": "No earnings yet",
+  "completedBookingsWillAppear": "Completed bookings will appear here",
+  "couldNotLoadEarnings": "Could not load earnings",
+  "bookingCount": "{count, plural, =1{1 booking} other{{count} bookings}}",
+  "@bookingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

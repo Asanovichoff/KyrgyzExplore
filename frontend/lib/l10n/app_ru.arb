@@ -121,5 +121,17 @@
   "connectStripe": "Подключите Stripe для получения платежей",
   "viewEarnings": "Просмотр доходов",
   "couldNotOpenBrowser": "Не удалось открыть браузер",
-  "couldNotStartOnboarding": "Не удалось начать настройку"
+  "couldNotStartOnboarding": "Не удалось начать настройку",
+
+  "earningsTitle": "Доходы",
+  "totalEarned": "Всего заработано",
+  "noEarningsYet": "Доходов ещё нет",
+  "completedBookingsWillAppear": "Завершённые бронирования появятся здесь",
+  "couldNotLoadEarnings": "Не удалось загрузить доходы",
+  "bookingCount": "{count, plural, =1{1 бронирование} few{{count} бронирования} many{{count} бронирований} other{{count} бронирования}}",
+  "@bookingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

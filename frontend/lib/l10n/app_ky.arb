@@ -121,5 +121,17 @@
   "connectStripe": "Төлөм алуу үчүн Stripe туташтырыңыз",
   "viewEarnings": "Кирешени көрүү",
   "couldNotOpenBrowser": "Браузерди ача алган жок",
-  "couldNotStartOnboarding": "Орнотууну баштай алган жок"
+  "couldNotStartOnboarding": "Орнотууну баштай алган жок",
+
+  "earningsTitle": "Киреше",
+  "totalEarned": "Жалпы киреше",
+  "noEarningsYet": "Азырынча киреше жок",
+  "completedBookingsWillAppear": "Аяктаган броньдор бул жерде көрүнөт",
+  "couldNotLoadEarnings": "Кирешени жүктөө мүмкүн болгон жок",
+  "bookingCount": "{count, plural, =1{1 бронь} other{{count} бронь}}",
+  "@bookingCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }

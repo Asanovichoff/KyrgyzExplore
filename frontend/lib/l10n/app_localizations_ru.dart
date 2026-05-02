@@ -340,4 +340,33 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get couldNotStartOnboarding => 'Не удалось начать настройку';
+
+  @override
+  String get earningsTitle => 'Доходы';
+
+  @override
+  String get totalEarned => 'Всего заработано';
+
+  @override
+  String get noEarningsYet => 'Доходов ещё нет';
+
+  @override
+  String get completedBookingsWillAppear =>
+      'Завершённые бронирования появятся здесь';
+
+  @override
+  String get couldNotLoadEarnings => 'Не удалось загрузить доходы';
+
+  @override
+  String bookingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count бронирования',
+      many: '$count бронирований',
+      few: '$count бронирования',
+      one: '1 бронирование',
+    );
+    return '$_temp0';
+  }
 }

@@ -717,6 +717,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not start onboarding'**
   String get couldNotStartOnboarding;
+
+  /// No description provided for @earningsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings'**
+  String get earningsTitle;
+
+  /// No description provided for @totalEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'Total earned'**
+  String get totalEarned;
+
+  /// No description provided for @noEarningsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No earnings yet'**
+  String get noEarningsYet;
+
+  /// No description provided for @completedBookingsWillAppear.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed bookings will appear here'**
+  String get completedBookingsWillAppear;
+
+  /// No description provided for @couldNotLoadEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load earnings'**
+  String get couldNotLoadEarnings;
+
+  /// No description provided for @bookingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 booking} other{{count} bookings}}'**
+  String bookingCount(int count);
 }
 
 class _AppLocalizationsDelegate

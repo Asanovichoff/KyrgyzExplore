@@ -335,4 +335,31 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get couldNotStartOnboarding => 'Орнотууну баштай алган жок';
+
+  @override
+  String get earningsTitle => 'Киреше';
+
+  @override
+  String get totalEarned => 'Жалпы киреше';
+
+  @override
+  String get noEarningsYet => 'Азырынча киреше жок';
+
+  @override
+  String get completedBookingsWillAppear =>
+      'Аяктаган броньдор бул жерде көрүнөт';
+
+  @override
+  String get couldNotLoadEarnings => 'Кирешени жүктөө мүмкүн болгон жок';
+
+  @override
+  String bookingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count бронь',
+      one: '1 бронь',
+    );
+    return '$_temp0';
+  }
 }

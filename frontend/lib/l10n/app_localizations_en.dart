@@ -333,4 +333,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get couldNotStartOnboarding => 'Could not start onboarding';
+
+  @override
+  String get earningsTitle => 'Earnings';
+
+  @override
+  String get totalEarned => 'Total earned';
+
+  @override
+  String get noEarningsYet => 'No earnings yet';
+
+  @override
+  String get completedBookingsWillAppear =>
+      'Completed bookings will appear here';
+
+  @override
+  String get couldNotLoadEarnings => 'Could not load earnings';
+
+  @override
+  String bookingCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bookings',
+      one: '1 booking',
+    );
+    return '$_temp0';
+  }
 }
