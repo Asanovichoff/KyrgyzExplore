@@ -40,6 +40,13 @@ class GoogleLoginRequest {
   Map<String, dynamic> toJson() => {'idToken': idToken};
 }
 
+/// Sent to POST /auth/login/apple
+class AppleLoginRequest {
+  const AppleLoginRequest({required this.identityToken});
+  final String identityToken;
+  Map<String, dynamic> toJson() => {'identityToken': identityToken};
+}
+
 /// Access + refresh tokens returned by login / register / refresh
 class TokenPair {
   const TokenPair({required this.accessToken, required this.refreshToken});

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -150,6 +151,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     icon: const Icon(Icons.login, size: 18),
                     label: const Text('Continue with Google'),
                   ),
+                  // Apple Sign-In is required on iOS when any social login is offered
+                  // (Apple App Store guideline 4.8). We hide it on Android because
+                  // android users can't complete the Apple auth flow.
+                  if (Platform.isIOS) ...[
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: authState.isLoading
+                          ? null
+                          : () async {
+                              try {
+                                await ref
+                                    .read(authStateProvider.notifier)
+                                    .loginWithApple();
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Apple sign-in failed: $e')),
+                                  );
+                                }
+                              }
+                            },
+                      icon: const Icon(Icons.apple, size: 18),
+                      label: const Text('Continue with Apple'),
+                    ),
+                  ],
                 ],
               ),
             ),

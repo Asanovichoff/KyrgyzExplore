@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../core/api/api_client.dart';
 import '../models/auth_models.dart';
 
@@ -47,6 +48,23 @@ class AuthRepository {
 
     final response = await _dio.post('/auth/login/google',
         data: GoogleLoginRequest(idToken: idToken).toJson());
+    final data = response.data['data'] as Map<String, dynamic>;
+    await _saveTokens(TokenPair.fromJson(data));
+    return UserModel.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
+  Future<UserModel> loginWithApple() async {
+    final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+    final identityToken = credential.identityToken;
+    if (identityToken == null) throw Exception('Could not get Apple identity token');
+
+    final response = await _dio.post('/auth/login/apple',
+        data: AppleLoginRequest(identityToken: identityToken).toJson());
     final data = response.data['data'] as Map<String, dynamic>;
     await _saveTokens(TokenPair.fromJson(data));
     return UserModel.fromJson(data['user'] as Map<String, dynamic>);

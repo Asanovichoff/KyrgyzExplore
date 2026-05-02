@@ -20,8 +20,13 @@ import '../../features/notification/screens/notification_screen.dart';
 import '../../features/message/screens/chat_screen.dart';
 import '../navigation/main_shell.dart';
 
+// Top-level key so code outside the widget tree (e.g. FCM tap handlers in
+// main.dart) can navigate without a BuildContext.
+final navigatorKey = GlobalKey<NavigatorState>();
+
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: '/',
     refreshListenable: _AuthNotifierListenable(ref),
     redirect: (context, state) {

@@ -42,6 +42,14 @@ class AuthNotifier extends AsyncNotifier<UserModel?> {
     if (state.hasValue && state.value != null) _registerFcmToken();
   }
 
+  Future<void> loginWithApple() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref.read(authRepositoryProvider).loginWithApple(),
+    );
+    if (state.hasValue && state.value != null) _registerFcmToken();
+  }
+
   Future<void> register(RegisterRequest req) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(
