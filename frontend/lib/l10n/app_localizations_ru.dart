@@ -369,4 +369,228 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get logInToContinue => 'Войдите, чтобы продолжить';
+
+  @override
+  String get enterValidEmail => 'Введите корректный email';
+
+  @override
+  String get passwordMinLength => 'Пароль должен содержать не менее 8 символов';
+
+  @override
+  String get or => 'или';
+
+  @override
+  String get continueWithGoogle => 'Продолжить через Google';
+
+  @override
+  String get continueWithApple => 'Продолжить через Apple';
+
+  @override
+  String get googleSignInFailed => 'Не удалось войти через Google';
+
+  @override
+  String get appleSignInFailed => 'Не удалось войти через Apple';
+
+  @override
+  String get loginFailed => 'Ошибка входа. Попробуйте снова.';
+
+  @override
+  String get registrationFailed => 'Ошибка регистрации. Попробуйте снова.';
+
+  @override
+  String get required => 'Обязательное поле';
+
+  @override
+  String get mustBeNumber => 'Должно быть числом';
+
+  @override
+  String get filtersTooltip => 'Фильтры';
+
+  @override
+  String get requestToBook => 'Отправить заявку';
+
+  @override
+  String get dates => 'Даты';
+
+  @override
+  String get checkInLabel => 'Заезд';
+
+  @override
+  String get checkOutLabel => 'Выезд';
+
+  @override
+  String get guestsLabel => 'Гости';
+
+  @override
+  String get messageToHostOptional => 'Сообщение хозяину (необязательно)';
+
+  @override
+  String get messageToHostHint => 'Расскажите хозяину о своих планах...';
+
+  @override
+  String get selectDate => 'Выбрать';
+
+  @override
+  String dayCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дня',
+      many: '$count дней',
+      few: '$count дня',
+      one: '1 день',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bookingRequestSent =>
+      'Заявка отправлена! Хозяин скоро подтвердит.';
+
+  @override
+  String get pleaseSelectDates => 'Выберите даты заезда и выезда.';
+
+  @override
+  String get checkoutAfterCheckin =>
+      'Дата выезда должна быть не раньше следующего дня после заезда.';
+
+  @override
+  String get couldNotReachServer =>
+      'Не удалось подключиться к серверу. Проверьте соединение.';
+
+  @override
+  String get somethingWentWrong => 'Что-то пошло не так. Попробуйте снова.';
+
+  @override
+  String get editListing => 'Редактировать объявление';
+
+  @override
+  String get newListing => 'Новое объявление';
+
+  @override
+  String get typeSectionLabel => 'Тип';
+
+  @override
+  String get basicInfo => 'Основная информация';
+
+  @override
+  String get titleFieldLabel => 'Название';
+
+  @override
+  String get descriptionFieldLabel => 'Описание';
+
+  @override
+  String get pricingSection => 'Цена';
+
+  @override
+  String get pricePerNightDay => 'Цена за ночь/день';
+
+  @override
+  String get currencyLabel => 'Валюта';
+
+  @override
+  String get maxGuestsOptional => 'Макс. гостей (необязательно)';
+
+  @override
+  String get locationSection => 'Местоположение';
+
+  @override
+  String get streetAddress => 'Адрес';
+
+  @override
+  String get cityLabel => 'Город';
+
+  @override
+  String get latitudeLabel => 'Широта';
+
+  @override
+  String get longitudeLabel => 'Долгота';
+
+  @override
+  String get useMyLocation => 'Использовать мою геопозицию';
+
+  @override
+  String get locationPermissionDenied => 'Доступ к геопозиции запрещён';
+
+  @override
+  String get couldNotGetLocation => 'Не удалось определить местоположение';
+
+  @override
+  String get photosSection => 'Фотографии';
+
+  @override
+  String get listingUpdated => 'Объявление обновлено!';
+
+  @override
+  String get listingCreated => 'Объявление создано!';
+
+  @override
+  String get couldNotDeleteImage => 'Не удалось удалить фото';
+
+  @override
+  String get available => 'Доступно';
+
+  @override
+  String get blockedLabel => 'Занято';
+
+  @override
+  String get pendingChangeLabel => 'Ожидает изменения';
+
+  @override
+  String get availabilityUpdated => 'Доступность обновлена';
+
+  @override
+  String availabilityUnsavedHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count несохранённых изменения — нажмите Сохранить',
+      many: '$count несохранённых изменений — нажмите Сохранить',
+      few: '$count несохранённых изменения — нажмите Сохранить',
+      one: '1 несохранённое изменение — нажмите Сохранить',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get couldNotLoadAvailability => 'Не удалось загрузить доступность';
+
+  @override
+  String get couldNotSaveAvailability => 'Не удалось сохранить доступность';
+
+  @override
+  String get chatNoMessages => 'Сообщений пока нет.\nПоздоровайтесь!';
+
+  @override
+  String get typeAMessage => 'Введите сообщение…';
+
+  @override
+  String get navListings => 'Объявления';
+
+  @override
+  String get navBookings => 'Брони';
+
+  @override
+  String get logOutConfirm => 'Вы уверены, что хотите выйти?';
+
+  @override
+  String get timeJustNow => 'Только что';
+
+  @override
+  String timeMinutesAgo(int count) {
+    return '$count мин. назад';
+  }
+
+  @override
+  String timeHoursAgo(int count) {
+    return '$count ч. назад';
+  }
+
+  @override
+  String timeDaysAgo(int count) {
+    return '$count дн. назад';
+  }
 }

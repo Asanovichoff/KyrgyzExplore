@@ -362,4 +362,227 @@ class AppLocalizationsKy extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get logInToContinue => 'Улантуу үчүн кириңиз';
+
+  @override
+  String get enterValidEmail => 'Туура email киргизиңиз';
+
+  @override
+  String get passwordMinLength => 'Сырсөз кеминде 8 белгиден турушу керек';
+
+  @override
+  String get or => 'же';
+
+  @override
+  String get continueWithGoogle => 'Google аркылуу улантуу';
+
+  @override
+  String get continueWithApple => 'Apple аркылуу улантуу';
+
+  @override
+  String get googleSignInFailed => 'Google аркылуу кирүү мүмкүн болгон жок';
+
+  @override
+  String get appleSignInFailed => 'Apple аркылуу кирүү мүмкүн болгон жок';
+
+  @override
+  String get loginFailed => 'Кирүү катасы. Кайра аракет кылыңыз.';
+
+  @override
+  String get registrationFailed => 'Катталуу катасы. Кайра аракет кылыңыз.';
+
+  @override
+  String get required => 'Милдеттүү талаа';
+
+  @override
+  String get mustBeNumber => 'Сан болушу керек';
+
+  @override
+  String get filtersTooltip => 'Чыпкалар';
+
+  @override
+  String get requestToBook => 'Бронь сурамжылоо';
+
+  @override
+  String get dates => 'Күндөр';
+
+  @override
+  String get checkInLabel => 'Кирүү';
+
+  @override
+  String get checkOutLabel => 'Чыгуу';
+
+  @override
+  String get guestsLabel => 'Конокчулар';
+
+  @override
+  String get messageToHostOptional => 'Ээсине билдирүү (милдеттүү эмес)';
+
+  @override
+  String get messageToHostHint => 'Планыңыз жөнүндө ээге айтыңыз...';
+
+  @override
+  String get selectDate => 'Тандоо';
+
+  @override
+  String dayCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count күн',
+      one: '1 күн',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bookingRequestSent =>
+      'Бронь сурамжылоосу жөнөтүлдү! Ээ жакында ырастайт.';
+
+  @override
+  String get pleaseSelectDates => 'Кирүү жана чыгуу күндөрүн тандаңыз.';
+
+  @override
+  String get checkoutAfterCheckin =>
+      'Чыгуу кирүүдөн кийин кеминде 1 күн болушу керек.';
+
+  @override
+  String get couldNotReachServer =>
+      'Серверге туташуу мүмкүн болгон жок. Байланышыңызды текшериңиз.';
+
+  @override
+  String get somethingWentWrong =>
+      'Бир нерсе ката кетти. Кайра аракет кылыңыз.';
+
+  @override
+  String get editListing => 'Жарнаманы өзгөртүү';
+
+  @override
+  String get newListing => 'Жаңы жарнама';
+
+  @override
+  String get typeSectionLabel => 'Түрү';
+
+  @override
+  String get basicInfo => 'Негизги маалымат';
+
+  @override
+  String get titleFieldLabel => 'Аты';
+
+  @override
+  String get descriptionFieldLabel => 'Сүрөттөмө';
+
+  @override
+  String get pricingSection => 'Баасы';
+
+  @override
+  String get pricePerNightDay => 'Бир түн/күн баасы';
+
+  @override
+  String get currencyLabel => 'Валюта';
+
+  @override
+  String get maxGuestsOptional => 'Мак. конок (кошумча)';
+
+  @override
+  String get locationSection => 'Жайгашуу';
+
+  @override
+  String get streetAddress => 'Дарек';
+
+  @override
+  String get cityLabel => 'Шаар';
+
+  @override
+  String get latitudeLabel => 'Кеңдик';
+
+  @override
+  String get longitudeLabel => 'Узундук';
+
+  @override
+  String get useMyLocation => 'Менин жайгашуумду колдонуу';
+
+  @override
+  String get locationPermissionDenied => 'Жайгашуу уруксаты берилген жок';
+
+  @override
+  String get couldNotGetLocation => 'Жайгашууну аныктоо мүмкүн болгон жок';
+
+  @override
+  String get photosSection => 'Сүрөттөр';
+
+  @override
+  String get listingUpdated => 'Жарнама жаңыланды!';
+
+  @override
+  String get listingCreated => 'Жарнама түзүлдү!';
+
+  @override
+  String get couldNotDeleteImage => 'Сүрөттү жок кылуу мүмкүн болгон жок';
+
+  @override
+  String get available => 'Жеткиликтүү';
+
+  @override
+  String get blockedLabel => 'Блокталган';
+
+  @override
+  String get pendingChangeLabel => 'Күтүп жаткан өзгөртүү';
+
+  @override
+  String get availabilityUpdated => 'Жеткиликтүүлүк жаңыланды';
+
+  @override
+  String availabilityUnsavedHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count сакталбаган өзгөртүү — Сактоо баскычын басыңыз',
+      one: '1 сакталбаган өзгөртүү — Сактоо баскычын басыңыз',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get couldNotLoadAvailability =>
+      'Жеткиликтүүлүктү жүктөө мүмкүн болгон жок';
+
+  @override
+  String get couldNotSaveAvailability =>
+      'Жеткиликтүүлүктү сактоо мүмкүн болгон жок';
+
+  @override
+  String get chatNoMessages => 'Азырынча кабарлар жок.\nСалам айтыңыз!';
+
+  @override
+  String get typeAMessage => 'Кабар жазыңыз…';
+
+  @override
+  String get navListings => 'Жарнамалар';
+
+  @override
+  String get navBookings => 'Броньдор';
+
+  @override
+  String get logOutConfirm => 'Чыгуу жөнүндө ишениңизби?';
+
+  @override
+  String get timeJustNow => 'Азыр эле';
+
+  @override
+  String timeMinutesAgo(int count) {
+    return '$count мүн. мурун';
+  }
+
+  @override
+  String timeHoursAgo(int count) {
+    return '$count саат мурун';
+  }
+
+  @override
+  String timeDaysAgo(int count) {
+    return '$count күн мурун';
+  }
 }

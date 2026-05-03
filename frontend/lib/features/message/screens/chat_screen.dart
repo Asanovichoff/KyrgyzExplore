@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
+import '../../../core/l10n/l10n_extension.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/repositories/auth_repository.dart';
@@ -138,13 +140,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         children: [
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator())
+                ? const _ChatSkeleton()
                 : _messages.isEmpty
-                    ? const Center(
+                    ? Center(
                         child: Text(
-                          'No messages yet.\nSay hello!',
+                          context.l10n.chatNoMessages,
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: kGrey),
+                          style: const TextStyle(color: kGrey),
                         ),
                       )
                     : ListView.builder(
@@ -164,6 +166,46 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             onSend: _connected ? _sendMessage : null,
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Loading skeleton
+// ──────────────────────────────────────────────────────────────────────────────
+
+class _ChatSkeleton extends StatelessWidget {
+  const _ChatSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        itemCount: 8,
+        itemBuilder: (_, i) {
+          final isOwn = i.isEven;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              mainAxisAlignment:
+                  isOwn ? MainAxisAlignment.end : MainAxisAlignment.start,
+              children: [
+                Container(
+                  height: 40,
+                  width: 160 + (i % 3) * 30.0,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -275,7 +317,7 @@ class _InputBar extends StatelessWidget {
                 maxLength: 2000,
                 textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
-                  hintText: 'Type a message…',
+                  hintText: context.l10n.typeAMessage,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(24),
                     borderSide: BorderSide.none,

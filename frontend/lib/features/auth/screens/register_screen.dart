@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import '../../../core/models/app_exception.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/auth_models.dart';
@@ -51,7 +52,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     ref.listen(authStateProvider, (_, next) {
       if (next is AsyncError) {
         final ex = next.error;
-        final msg = ex is ServerException ? ex.message : 'Registration failed. Try again.';
+        final msg = ex is ServerException ? ex.message : context.l10n.registrationFailed;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg), backgroundColor: kError),
         );
@@ -59,7 +60,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Account')),
+      appBar: AppBar(title: Text(context.l10n.register)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -73,18 +74,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _firstCtrl,
-                        decoration: const InputDecoration(labelText: 'First Name'),
+                        decoration: InputDecoration(labelText: context.l10n.firstName),
                         textInputAction: TextInputAction.next,
-                        validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                        validator: (v) => v == null || v.isEmpty ? context.l10n.required : null,
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: TextFormField(
                         controller: _lastCtrl,
-                        decoration: const InputDecoration(labelText: 'Last Name'),
+                        decoration: InputDecoration(labelText: context.l10n.lastName),
                         textInputAction: TextInputAction.next,
-                        validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                        validator: (v) => v == null || v.isEmpty ? context.l10n.required : null,
                       ),
                     ),
                   ],
@@ -92,17 +93,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _emailCtrl,
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  decoration: InputDecoration(labelText: context.l10n.email),
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
                   validator: (v) =>
-                      v == null || !v.contains('@') ? 'Enter a valid email' : null,
+                      v == null || !v.contains('@') ? context.l10n.enterValidEmail : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passCtrl,
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: context.l10n.password,
                     suffixIcon: IconButton(
                       icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
                       onPressed: () => setState(() => _obscure = !_obscure),
@@ -111,16 +112,16 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   obscureText: _obscure,
                   textInputAction: TextInputAction.done,
                   validator: (v) => v == null || v.length < 8
-                      ? 'Password must be at least 8 chars'
+                      ? context.l10n.passwordMinLength
                       : null,
                 ),
                 const SizedBox(height: 20),
-                Text('I am a', style: Theme.of(context).textTheme.titleSmall),
+                Text(context.l10n.role, style: Theme.of(context).textTheme.titleSmall),
                 const SizedBox(height: 8),
                 SegmentedButton<String>(
-                  segments: const [
-                    ButtonSegment(value: 'TRAVELER', label: Text('Traveler'), icon: Icon(Icons.explore)),
-                    ButtonSegment(value: 'HOST',     label: Text('Host'),     icon: Icon(Icons.home)),
+                  segments: [
+                    ButtonSegment(value: 'TRAVELER', label: Text(context.l10n.traveler), icon: const Icon(Icons.explore)),
+                    ButtonSegment(value: 'HOST',     label: Text(context.l10n.host),     icon: const Icon(Icons.home)),
                   ],
                   selected: {_role},
                   onSelectionChanged: (s) => setState(() => _role = s.first),
@@ -137,12 +138,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text('Create Account'),
+                      : Text(context.l10n.register),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: () => context.goNamed('login'),
-                  child: const Text('Already have an account? Log in'),
+                  child: Text(context.l10n.alreadyHaveAccount),
                 ),
               ],
             ),

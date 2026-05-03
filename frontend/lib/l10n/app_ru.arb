@@ -133,5 +133,100 @@
     "placeholders": {
       "count": { "type": "int" }
     }
+  },
+
+  "logInToContinue": "Войдите, чтобы продолжить",
+  "enterValidEmail": "Введите корректный email",
+  "passwordMinLength": "Пароль должен содержать не менее 8 символов",
+  "or": "или",
+  "continueWithGoogle": "Продолжить через Google",
+  "continueWithApple": "Продолжить через Apple",
+  "googleSignInFailed": "Не удалось войти через Google",
+  "appleSignInFailed": "Не удалось войти через Apple",
+  "loginFailed": "Ошибка входа. Попробуйте снова.",
+  "registrationFailed": "Ошибка регистрации. Попробуйте снова.",
+  "required": "Обязательное поле",
+  "mustBeNumber": "Должно быть числом",
+  "filtersTooltip": "Фильтры",
+
+  "requestToBook": "Отправить заявку",
+  "dates": "Даты",
+  "checkInLabel": "Заезд",
+  "checkOutLabel": "Выезд",
+  "guestsLabel": "Гости",
+  "messageToHostOptional": "Сообщение хозяину (необязательно)",
+  "messageToHostHint": "Расскажите хозяину о своих планах...",
+  "selectDate": "Выбрать",
+  "dayCount": "{count, plural, =1{1 день} few{{count} дня} many{{count} дней} other{{count} дня}}",
+  "@dayCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "bookingRequestSent": "Заявка отправлена! Хозяин скоро подтвердит.",
+  "pleaseSelectDates": "Выберите даты заезда и выезда.",
+  "checkoutAfterCheckin": "Дата выезда должна быть не раньше следующего дня после заезда.",
+  "couldNotReachServer": "Не удалось подключиться к серверу. Проверьте соединение.",
+  "somethingWentWrong": "Что-то пошло не так. Попробуйте снова.",
+
+  "editListing": "Редактировать объявление",
+  "newListing": "Новое объявление",
+  "typeSectionLabel": "Тип",
+  "basicInfo": "Основная информация",
+  "titleFieldLabel": "Название",
+  "descriptionFieldLabel": "Описание",
+  "pricingSection": "Цена",
+  "pricePerNightDay": "Цена за ночь/день",
+  "currencyLabel": "Валюта",
+  "maxGuestsOptional": "Макс. гостей (необязательно)",
+  "locationSection": "Местоположение",
+  "streetAddress": "Адрес",
+  "cityLabel": "Город",
+  "latitudeLabel": "Широта",
+  "longitudeLabel": "Долгота",
+  "useMyLocation": "Использовать мою геопозицию",
+  "locationPermissionDenied": "Доступ к геопозиции запрещён",
+  "couldNotGetLocation": "Не удалось определить местоположение",
+  "photosSection": "Фотографии",
+  "listingUpdated": "Объявление обновлено!",
+  "listingCreated": "Объявление создано!",
+  "couldNotDeleteImage": "Не удалось удалить фото",
+
+  "available": "Доступно",
+  "blockedLabel": "Занято",
+  "pendingChangeLabel": "Ожидает изменения",
+  "availabilityUpdated": "Доступность обновлена",
+  "availabilityUnsavedHint": "{count, plural, =1{1 несохранённое изменение — нажмите Сохранить} few{{count} несохранённых изменения — нажмите Сохранить} many{{count} несохранённых изменений — нажмите Сохранить} other{{count} несохранённых изменения — нажмите Сохранить}}",
+  "@availabilityUnsavedHint": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "couldNotLoadAvailability": "Не удалось загрузить доступность",
+  "couldNotSaveAvailability": "Не удалось сохранить доступность",
+  "chatNoMessages": "Сообщений пока нет.\nПоздоровайтесь!",
+  "typeAMessage": "Введите сообщение…",
+  "navListings": "Объявления",
+  "navBookings": "Брони",
+  "logOutConfirm": "Вы уверены, что хотите выйти?",
+
+  "timeJustNow": "Только что",
+  "timeMinutesAgo": "{count} мин. назад",
+  "@timeMinutesAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeHoursAgo": "{count} ч. назад",
+  "@timeHoursAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeDaysAgo": "{count} дн. назад",
+  "@timeDaysAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
   }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import '../../../core/models/app_exception.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/auth_models.dart';
@@ -43,7 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ref.listen(authStateProvider, (_, next) {
       if (next is AsyncError) {
         final ex = next.error;
-        final msg = ex is ServerException ? ex.message : 'Login failed. Try again.';
+        final msg = ex is ServerException ? ex.message : context.l10n.loginFailed;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(msg), backgroundColor: kError),
         );
@@ -51,44 +52,76 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 32),
-                  Text(
-                    'KyrgyzExplore',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium
-                        ?.copyWith(color: kNavy, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ── Gradient hero ─────────────────────────────────────────────
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [kNavy, kTeal],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            padding: EdgeInsets.fromLTRB(
+              24,
+              MediaQuery.of(context).padding.top + 32,
+              24,
+              32,
+            ),
+            child: Column(
+              children: [
+                Image.asset(
+                  'assets/icons/app_icon.png',
+                  width: 64,
+                  height: 64,
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'KyrgyzExplore',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Log in to continue',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: kGrey),
-                    textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  context.l10n.logInToContinue,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 13,
                   ),
-                  const SizedBox(height: 40),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Form ──────────────────────────────────────────────────────
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 8),
                   TextFormField(
                     controller: _emailCtrl,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    decoration: InputDecoration(labelText: context.l10n.email),
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     validator: (v) =>
-                        v == null || !v.contains('@') ? 'Enter a valid email' : null,
+                        v == null || !v.contains('@') ? context.l10n.enterValidEmail : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _passCtrl,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: context.l10n.password,
                       suffixIcon: IconButton(
                         icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
                         onPressed: () => setState(() => _obscure = !_obscure),
@@ -98,7 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) => _submit(),
                     validator: (v) =>
-                        v == null || v.length < 8 ? 'Password must be at least 8 chars' : null,
+                        v == null || v.length < 8 ? context.l10n.passwordMinLength : null,
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
@@ -112,23 +145,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text('Log In'),
+                        : Text(context.l10n.login),
                   ),
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: () => context.goNamed('register'),
-                    child: const Text("Don't have an account? Create one"),
+                    child: Text(context.l10n.noAccount),
                   ),
                   const SizedBox(height: 8),
-                  const Row(
+                  Row(
                     children: [
-                      Expanded(child: Divider()),
+                      const Expanded(child: Divider()),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 12),
-                        child: Text('or',
-                            style: TextStyle(color: kGrey, fontSize: 13)),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(context.l10n.or,
+                            style: const TextStyle(color: kGrey, fontSize: 13)),
                       ),
-                      Expanded(child: Divider()),
+                      const Expanded(child: Divider()),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -143,13 +176,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             } catch (e) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Google sign-in failed: $e')),
+                                  SnackBar(content: Text(context.l10n.googleSignInFailed)),
                                 );
                               }
                             }
                           },
                     icon: const Icon(Icons.login, size: 18),
-                    label: const Text('Continue with Google'),
+                    label: Text(context.l10n.continueWithGoogle),
                   ),
                   // Apple Sign-In is required on iOS when any social login is offered
                   // (Apple App Store guideline 4.8). We hide it on Android because
@@ -167,20 +200,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               } catch (e) {
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Apple sign-in failed: $e')),
+                                    SnackBar(content: Text(context.l10n.appleSignInFailed)),
                                   );
                                 }
                               }
                             },
                       icon: const Icon(Icons.apple, size: 18),
-                      label: const Text('Continue with Apple'),
+                      label: Text(context.l10n.continueWithApple),
                     ),
                   ],
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -360,4 +360,224 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get logInToContinue => 'Log in to continue';
+
+  @override
+  String get enterValidEmail => 'Enter a valid email';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 8 chars';
+
+  @override
+  String get or => 'or';
+
+  @override
+  String get continueWithGoogle => 'Continue with Google';
+
+  @override
+  String get continueWithApple => 'Continue with Apple';
+
+  @override
+  String get googleSignInFailed => 'Google sign-in failed';
+
+  @override
+  String get appleSignInFailed => 'Apple sign-in failed';
+
+  @override
+  String get loginFailed => 'Login failed. Try again.';
+
+  @override
+  String get registrationFailed => 'Registration failed. Try again.';
+
+  @override
+  String get required => 'Required';
+
+  @override
+  String get mustBeNumber => 'Must be a number';
+
+  @override
+  String get filtersTooltip => 'Filters';
+
+  @override
+  String get requestToBook => 'Request to Book';
+
+  @override
+  String get dates => 'Dates';
+
+  @override
+  String get checkInLabel => 'Check-in';
+
+  @override
+  String get checkOutLabel => 'Check-out';
+
+  @override
+  String get guestsLabel => 'Guests';
+
+  @override
+  String get messageToHostOptional => 'Message to host (optional)';
+
+  @override
+  String get messageToHostHint => 'Tell the host about your plans...';
+
+  @override
+  String get selectDate => 'Select';
+
+  @override
+  String dayCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get bookingRequestSent =>
+      'Booking request sent! The host will confirm shortly.';
+
+  @override
+  String get pleaseSelectDates => 'Please select check-in and check-out dates.';
+
+  @override
+  String get checkoutAfterCheckin =>
+      'Check-out must be at least 1 day after check-in.';
+
+  @override
+  String get couldNotReachServer =>
+      'Could not reach the server. Check your connection.';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong. Please try again.';
+
+  @override
+  String get editListing => 'Edit Listing';
+
+  @override
+  String get newListing => 'New Listing';
+
+  @override
+  String get typeSectionLabel => 'Type';
+
+  @override
+  String get basicInfo => 'Basic info';
+
+  @override
+  String get titleFieldLabel => 'Title';
+
+  @override
+  String get descriptionFieldLabel => 'Description';
+
+  @override
+  String get pricingSection => 'Pricing';
+
+  @override
+  String get pricePerNightDay => 'Price per night/day';
+
+  @override
+  String get currencyLabel => 'Currency';
+
+  @override
+  String get maxGuestsOptional => 'Max guests (optional)';
+
+  @override
+  String get locationSection => 'Location';
+
+  @override
+  String get streetAddress => 'Street address';
+
+  @override
+  String get cityLabel => 'City';
+
+  @override
+  String get latitudeLabel => 'Latitude';
+
+  @override
+  String get longitudeLabel => 'Longitude';
+
+  @override
+  String get useMyLocation => 'Use my location';
+
+  @override
+  String get locationPermissionDenied => 'Location permission denied';
+
+  @override
+  String get couldNotGetLocation => 'Could not get location';
+
+  @override
+  String get photosSection => 'Photos';
+
+  @override
+  String get listingUpdated => 'Listing updated!';
+
+  @override
+  String get listingCreated => 'Listing created!';
+
+  @override
+  String get couldNotDeleteImage => 'Could not delete image';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get blockedLabel => 'Blocked';
+
+  @override
+  String get pendingChangeLabel => 'Pending change';
+
+  @override
+  String get availabilityUpdated => 'Availability updated';
+
+  @override
+  String availabilityUnsavedHint(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unsaved changes — tap Save',
+      one: '1 unsaved change — tap Save',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get couldNotLoadAvailability => 'Could not load availability';
+
+  @override
+  String get couldNotSaveAvailability => 'Could not save availability';
+
+  @override
+  String get chatNoMessages => 'No messages yet.\nSay hello!';
+
+  @override
+  String get typeAMessage => 'Type a message…';
+
+  @override
+  String get navListings => 'Listings';
+
+  @override
+  String get navBookings => 'Bookings';
+
+  @override
+  String get logOutConfirm => 'Are you sure you want to log out?';
+
+  @override
+  String get timeJustNow => 'Just now';
+
+  @override
+  String timeMinutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String timeHoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String timeDaysAgo(int count) {
+    return '${count}d ago';
+  }
 }

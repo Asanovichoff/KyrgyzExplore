@@ -20,7 +20,7 @@ class TypeBadge extends StatelessWidget {
   static const _colors = {
     'HOUSE': kNavy,
     'CAR': kTeal,
-    'ACTIVITY': Color(0xFFE65100),
+    'ACTIVITY': kActivityOrange,
   };
 
   @override

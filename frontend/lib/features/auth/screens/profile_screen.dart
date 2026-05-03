@@ -317,7 +317,29 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
           // Logout
           OutlinedButton.icon(
-            onPressed: () => ref.read(authStateProvider.notifier).logout(),
+            onPressed: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: Text(context.l10n.logOut),
+                  content: Text(context.l10n.logOutConfirm),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: Text(context.l10n.cancel),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      child: Text(context.l10n.logOut),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed == true && mounted) {
+                ref.read(authStateProvider.notifier).logout();
+              }
+            },
             icon: const Icon(Icons.logout, color: Colors.red),
             label: Text(context.l10n.logOut,
                 style: const TextStyle(color: Colors.red)),

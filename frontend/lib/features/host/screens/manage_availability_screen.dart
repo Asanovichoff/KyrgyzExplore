@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/models/listing_model.dart';
 import '../repositories/host_repository.dart';
@@ -29,12 +32,6 @@ class _ManageAvailabilityScreenState
   bool _fetching = true;
   bool _saving = false;
 
-  static const _monthNames = [
-    '', 'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
-  ];
-  static const _dayLabels = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-
   @override
   void initState() {
     super.initState();
@@ -54,7 +51,7 @@ class _ManageAvailabilityScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not load availability: $e')),
+          SnackBar(content: Text(context.l10n.couldNotLoadAvailability)),
         );
       }
     } finally {
@@ -124,13 +121,13 @@ class _ManageAvailabilityScreenState
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Availability updated')),
+          SnackBar(content: Text(context.l10n.availabilityUpdated)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not save: $e')),
+          SnackBar(content: Text(context.l10n.couldNotSaveAvailability)),
         );
       }
     } finally {
@@ -140,6 +137,13 @@ class _ManageAvailabilityScreenState
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context).languageCode;
+    // Monday-anchored locale-aware day abbreviations
+    final dayLabels = List.generate(
+      7,
+      (i) => DateFormat('EEE', locale).format(DateTime(2024, 1, 1 + i)),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.listing.title),
@@ -153,23 +157,27 @@ class _ManageAvailabilityScreenState
                       width: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save'),
+                  : Text(context.l10n.save),
             ),
         ],
       ),
       body: Column(
         children: [
           // Legend
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 12, 16, 0),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _LegendDot(color: kLight, label: 'Available'),
-                SizedBox(width: 16),
-                _LegendDot(color: Color(0xFFB0BEC5), label: 'Blocked'),
-                SizedBox(width: 16),
-                _LegendDot(color: Color(0xFFFFF176), label: 'Pending change'),
+                _LegendDot(color: kLight, label: context.l10n.available),
+                const SizedBox(width: 16),
+                _LegendDot(
+                    color: const Color(0xFFB0BEC5),
+                    label: context.l10n.blockedLabel),
+                const SizedBox(width: 16),
+                _LegendDot(
+                    color: const Color(0xFFFFF176),
+                    label: context.l10n.pendingChangeLabel),
               ],
             ),
           ),
@@ -186,7 +194,8 @@ class _ManageAvailabilityScreenState
                   onPressed: _prevMonth,
                 ),
                 Text(
-                  '${_monthNames[_month]} $_year',
+                  DateFormat('MMMM yyyy', locale)
+                      .format(DateTime(_year, _month)),
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 IconButton(
@@ -201,7 +210,7 @@ class _ManageAvailabilityScreenState
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
-              children: _dayLabels
+              children: dayLabels
                   .map((d) => Expanded(
                         child: Center(
                           child: Text(
@@ -219,12 +228,9 @@ class _ManageAvailabilityScreenState
 
           const SizedBox(height: 4),
 
-          // Calendar grid
+          // Calendar grid or shimmer
           if (_fetching)
-            const Padding(
-              padding: EdgeInsets.all(32),
-              child: CircularProgressIndicator(),
-            )
+            _CalendarShimmer()
           else
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -235,7 +241,8 @@ class _ManageAvailabilityScreenState
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
               child: Text(
-                '${_pendingBlock.length + _pendingUnblock.length} unsaved change${(_pendingBlock.length + _pendingUnblock.length) == 1 ? '' : 's'} — tap Save in the top right',
+                context.l10n.availabilityUnsavedHint(
+                    _pendingBlock.length + _pendingUnblock.length),
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
@@ -317,6 +324,35 @@ class _ManageAvailabilityScreenState
           ),
         );
       },
+    );
+  }
+}
+
+class _CalendarShimmer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 7,
+            childAspectRatio: 1,
+          ),
+          itemCount: 35,
+          itemBuilder: (_, __) => Container(
+            margin: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../shared/models/listing_model.dart';
 import '../../explore/providers/explore_provider.dart';
@@ -90,7 +91,7 @@ class _CreateEditListingScreenState
           permission == LocationPermission.denied) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permission denied')),
+            SnackBar(content: Text(context.l10n.locationPermissionDenied)),
           );
         }
         return;
@@ -103,7 +104,7 @@ class _CreateEditListingScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not get location: $e')),
+          SnackBar(content: Text(context.l10n.couldNotGetLocation)),
         );
       }
     } finally {
@@ -147,7 +148,7 @@ class _CreateEditListingScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not delete image: $e')));
+            SnackBar(content: Text(context.l10n.couldNotDeleteImage)));
       }
     }
   }
@@ -197,7 +198,7 @@ class _CreateEditListingScreenState
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_isEdit ? 'Listing updated!' : 'Listing created!'),
+          content: Text(_isEdit ? context.l10n.listingUpdated : context.l10n.listingCreated),
         ),
       );
     } catch (e) {
@@ -211,7 +212,7 @@ class _CreateEditListingScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? 'Edit Listing' : 'New Listing'),
+        title: Text(_isEdit ? context.l10n.editListing : context.l10n.newListing),
       ),
       body: Form(
         key: _formKey,
@@ -221,22 +222,22 @@ class _CreateEditListingScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Type ──────────────────────────────────────────────
-              const _SectionLabel('Type'),
+              _SectionLabel(context.l10n.typeSectionLabel),
               const SizedBox(height: 8),
               SegmentedButton<String>(
-                segments: const [
+                segments: [
                   ButtonSegment(
                       value: 'HOUSE',
-                      label: Text('House'),
-                      icon: Icon(Icons.house_outlined)),
+                      label: Text(context.l10n.typeHouse),
+                      icon: const Icon(Icons.house_outlined)),
                   ButtonSegment(
                       value: 'CAR',
-                      label: Text('Car'),
-                      icon: Icon(Icons.directions_car_outlined)),
+                      label: Text(context.l10n.typeCar),
+                      icon: const Icon(Icons.directions_car_outlined)),
                   ButtonSegment(
                       value: 'ACTIVITY',
-                      label: Text('Activity'),
-                      icon: Icon(Icons.hiking_outlined)),
+                      label: Text(context.l10n.typeActivity),
+                      icon: const Icon(Icons.hiking_outlined)),
                 ],
                 selected: {_type},
                 onSelectionChanged: (s) => setState(() => _type = s.first),
@@ -245,13 +246,13 @@ class _CreateEditListingScreenState
               const SizedBox(height: 20),
 
               // ── Basic info ────────────────────────────────────────
-              const _SectionLabel('Basic info'),
+              _SectionLabel(context.l10n.basicInfo),
               const SizedBox(height: 8),
-              _Field(controller: _title, label: 'Title', validator: _required),
+              _Field(controller: _title, label: context.l10n.titleFieldLabel, validator: _required),
               const SizedBox(height: 12),
               _Field(
                 controller: _description,
-                label: 'Description',
+                label: context.l10n.descriptionFieldLabel,
                 maxLines: 4,
                 validator: _required,
               ),
@@ -259,7 +260,7 @@ class _CreateEditListingScreenState
               const SizedBox(height: 20),
 
               // ── Pricing ───────────────────────────────────────────
-              const _SectionLabel('Pricing'),
+              _SectionLabel(context.l10n.pricingSection),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -267,38 +268,38 @@ class _CreateEditListingScreenState
                     flex: 3,
                     child: _Field(
                       controller: _price,
-                      label: 'Price per night/day',
+                      label: context.l10n.pricePerNightDay,
                       keyboardType: TextInputType.number,
                       validator: _requiredNumber,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: _Field(controller: _currency, label: 'Currency'),
+                    child: _Field(controller: _currency, label: context.l10n.currencyLabel),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
               _Field(
                 controller: _maxGuests,
-                label: 'Max guests (optional)',
+                label: context.l10n.maxGuestsOptional,
                 keyboardType: TextInputType.number,
               ),
 
               const SizedBox(height: 20),
 
               // ── Location ──────────────────────────────────────────
-              const _SectionLabel('Location'),
+              _SectionLabel(context.l10n.locationSection),
               const SizedBox(height: 8),
               _Field(
                 controller: _address,
-                label: 'Street address',
+                label: context.l10n.streetAddress,
                 validator: _required,
               ),
               const SizedBox(height: 12),
               _Field(
                 controller: _city,
-                label: 'City',
+                label: context.l10n.cityLabel,
                 validator: _required,
               ),
               const SizedBox(height: 12),
@@ -307,7 +308,7 @@ class _CreateEditListingScreenState
                   Expanded(
                     child: _Field(
                       controller: _lat,
-                      label: 'Latitude',
+                      label: context.l10n.latitudeLabel,
                       keyboardType: const TextInputType.numberWithOptions(
                           decimal: true, signed: true),
                       validator: _requiredNumber,
@@ -317,7 +318,7 @@ class _CreateEditListingScreenState
                   Expanded(
                     child: _Field(
                       controller: _lon,
-                      label: 'Longitude',
+                      label: context.l10n.longitudeLabel,
                       keyboardType: const TextInputType.numberWithOptions(
                           decimal: true, signed: true),
                       validator: _requiredNumber,
@@ -335,13 +336,13 @@ class _CreateEditListingScreenState
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.my_location, size: 18),
-                label: const Text('Use my location'),
+                label: Text(context.l10n.useMyLocation),
               ),
 
               const SizedBox(height: 20),
 
               // ── Photos ────────────────────────────────────────────
-              const _SectionLabel('Photos'),
+              _SectionLabel(context.l10n.photosSection),
               const SizedBox(height: 8),
               PhotoStrip(
                 existingImages: _existingImages,
@@ -384,7 +385,7 @@ class _CreateEditListingScreenState
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : Text(_isEdit ? 'Save changes' : 'Create listing'),
+                      : Text(_isEdit ? context.l10n.saveChanges : context.l10n.createListing),
                 ),
               ),
 
@@ -397,11 +398,11 @@ class _CreateEditListingScreenState
   }
 
   String? _required(String? v) =>
-      (v == null || v.trim().isEmpty) ? 'Required' : null;
+      (v == null || v.trim().isEmpty) ? context.l10n.required : null;
 
   String? _requiredNumber(String? v) {
-    if (v == null || v.trim().isEmpty) return 'Required';
-    if (double.tryParse(v.trim()) == null) return 'Must be a number';
+    if (v == null || v.trim().isEmpty) return context.l10n.required;
+    if (double.tryParse(v.trim()) == null) return context.l10n.mustBeNumber;
     return null;
   }
 }

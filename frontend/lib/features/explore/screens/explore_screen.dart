@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import '../../../core/navigation/main_shell.dart';
 import '../../../core/theme/app_colors.dart';
 import '../models/search_params.dart';
@@ -11,12 +12,7 @@ import '../widgets/listing_card.dart';
 class ExploreScreen extends ConsumerWidget {
   const ExploreScreen({super.key});
 
-  static const _filters = [
-    (label: 'All',        type: null),
-    (label: 'Houses',     type: 'HOUSE'),
-    (label: 'Cars',       type: 'CAR'),
-    (label: 'Activities', type: 'ACTIVITY'),
-  ];
+  static const _filterTypes = <String?>[null, 'HOUSE', 'CAR', 'ACTIVITY'];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,7 +21,7 @@ class ExploreScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Explore'),
+        title: Text(context.l10n.home),
         actions: [
           const NotificationBellAction(),
           Badge(
@@ -33,7 +29,7 @@ class ExploreScreen extends ConsumerWidget {
             label: Text('${params.activeFilterCount}'),
             child: IconButton(
               icon: const Icon(Icons.tune),
-              tooltip: 'Filters',
+              tooltip: context.l10n.filtersTooltip,
               onPressed: () => showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
@@ -121,17 +117,24 @@ class _FilterChips extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
-          children: ExploreScreen._filters.map((f) {
-            final selected = current.type == f.type;
+          children: ExploreScreen._filterTypes.map((type) {
+            final selected = current.type == type;
+            final label = switch (type) {
+              null       => context.l10n.filterAll,
+              'HOUSE'    => context.l10n.filterHouses,
+              'CAR'      => context.l10n.filterCars,
+              'ACTIVITY' => context.l10n.filterActivities,
+              _          => type,
+            };
             return Padding(
               padding: const EdgeInsets.only(right: 8),
               child: FilterChip(
-                label: Text(f.label),
+                label: Text(label),
                 selected: selected,
                 selectedColor: kTeal.withValues(alpha: 0.15),
                 checkmarkColor: kTeal,
                 onSelected: (_) => onChanged(
-                  current.copyWith(type: f.type, page: 0),
+                  current.copyWith(type: type, page: 0),
                 ),
               ),
             );
@@ -178,12 +181,12 @@ class _ErrorView extends StatelessWidget {
           const Icon(Icons.wifi_off_rounded, size: 48, color: kGrey),
           const SizedBox(height: 12),
           Text(
-            'Could not load listings',
+            context.l10n.couldNotLoadListings,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 4),
           Text(
-            'Check your connection and try again',
+            context.l10n.checkConnectionAndRetry,
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
@@ -193,7 +196,7 @@ class _ErrorView extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text(context.l10n.retry),
           ),
         ],
       ),
@@ -213,12 +216,12 @@ class _EmptyView extends StatelessWidget {
           const Icon(Icons.search_off_rounded, size: 48, color: kGrey),
           const SizedBox(height: 12),
           Text(
-            'No listings found',
+            context.l10n.noListingsFound,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 4),
           Text(
-            'Try a different filter or area',
+            context.l10n.tryDifferentFilter,
             style: Theme.of(context)
                 .textTheme
                 .bodySmall

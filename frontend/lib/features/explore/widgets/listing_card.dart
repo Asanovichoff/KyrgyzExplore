@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/models/listing_model.dart';
 import '../../../shared/widgets/type_badge.dart';
@@ -13,6 +14,10 @@ class ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final priceLabel = listing.type == 'CAR'
+        ? '${listing.currency} ${listing.pricePerUnit.toStringAsFixed(0)} ${context.l10n.perDay}'
+        : '${listing.currency} ${listing.pricePerUnit.toStringAsFixed(0)} ${context.l10n.perNight}';
+
     return GestureDetector(
       onTap: onTap,
       child: Card(
@@ -40,7 +45,7 @@ class ListingCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   _LocationRow(listing: listing),
                   const SizedBox(height: 6),
-                  _PriceRatingRow(listing: listing),
+                  _PriceRatingRow(listing: listing, priceLabel: priceLabel),
                 ],
               ),
             ),
@@ -62,7 +67,7 @@ class _CoverImage extends StatelessWidget {
     return Stack(
       children: [
         SizedBox(
-          height: 140,
+          height: 160,
           width: double.infinity,
           child: coverUrl != null
               ? CachedNetworkImage(
@@ -132,21 +137,18 @@ class _LocationRow extends StatelessWidget {
 }
 
 class _PriceRatingRow extends StatelessWidget {
-  const _PriceRatingRow({required this.listing});
+  const _PriceRatingRow({required this.listing, required this.priceLabel});
 
   final ListingModel listing;
+  final String priceLabel;
 
   @override
   Widget build(BuildContext context) {
-    final label = listing.type == 'CAR' ? '/day' : '/night';
-    final price =
-        '${listing.currency} ${listing.pricePerUnit.toStringAsFixed(0)}$label';
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          price,
+          priceLabel,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: kNavy,
                 fontWeight: FontWeight.w700,
@@ -191,7 +193,7 @@ class ListingCardSkeleton extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(height: 140, color: Colors.white),
+            Container(height: 160, color: Colors.white),
             Padding(
               padding: const EdgeInsets.all(10),
               child: Column(

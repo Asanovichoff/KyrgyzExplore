@@ -38,5 +38,5 @@ logs/
 coverage/
 *.lcov
 
-# ── Docker local volumes (if mapped to a local path) ──────────
-infrastructure/volumes/
+# ── Infrastructure (Docker, CI config — local dev only) ───────
+infrastructure/

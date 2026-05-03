@@ -133,5 +133,100 @@
     "placeholders": {
       "count": { "type": "int" }
     }
+  },
+
+  "logInToContinue": "Улантуу үчүн кириңиз",
+  "enterValidEmail": "Туура email киргизиңиз",
+  "passwordMinLength": "Сырсөз кеминде 8 белгиден турушу керек",
+  "or": "же",
+  "continueWithGoogle": "Google аркылуу улантуу",
+  "continueWithApple": "Apple аркылуу улантуу",
+  "googleSignInFailed": "Google аркылуу кирүү мүмкүн болгон жок",
+  "appleSignInFailed": "Apple аркылуу кирүү мүмкүн болгон жок",
+  "loginFailed": "Кирүү катасы. Кайра аракет кылыңыз.",
+  "registrationFailed": "Катталуу катасы. Кайра аракет кылыңыз.",
+  "required": "Милдеттүү талаа",
+  "mustBeNumber": "Сан болушу керек",
+  "filtersTooltip": "Чыпкалар",
+
+  "requestToBook": "Бронь сурамжылоо",
+  "dates": "Күндөр",
+  "checkInLabel": "Кирүү",
+  "checkOutLabel": "Чыгуу",
+  "guestsLabel": "Конокчулар",
+  "messageToHostOptional": "Ээсине билдирүү (милдеттүү эмес)",
+  "messageToHostHint": "Планыңыз жөнүндө ээге айтыңыз...",
+  "selectDate": "Тандоо",
+  "dayCount": "{count, plural, =1{1 күн} other{{count} күн}}",
+  "@dayCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "bookingRequestSent": "Бронь сурамжылоосу жөнөтүлдү! Ээ жакында ырастайт.",
+  "pleaseSelectDates": "Кирүү жана чыгуу күндөрүн тандаңыз.",
+  "checkoutAfterCheckin": "Чыгуу кирүүдөн кийин кеминде 1 күн болушу керек.",
+  "couldNotReachServer": "Серверге туташуу мүмкүн болгон жок. Байланышыңызды текшериңиз.",
+  "somethingWentWrong": "Бир нерсе ката кетти. Кайра аракет кылыңыз.",
+
+  "editListing": "Жарнаманы өзгөртүү",
+  "newListing": "Жаңы жарнама",
+  "typeSectionLabel": "Түрү",
+  "basicInfo": "Негизги маалымат",
+  "titleFieldLabel": "Аты",
+  "descriptionFieldLabel": "Сүрөттөмө",
+  "pricingSection": "Баасы",
+  "pricePerNightDay": "Бир түн/күн баасы",
+  "currencyLabel": "Валюта",
+  "maxGuestsOptional": "Мак. конок (кошумча)",
+  "locationSection": "Жайгашуу",
+  "streetAddress": "Дарек",
+  "cityLabel": "Шаар",
+  "latitudeLabel": "Кеңдик",
+  "longitudeLabel": "Узундук",
+  "useMyLocation": "Менин жайгашуумду колдонуу",
+  "locationPermissionDenied": "Жайгашуу уруксаты берилген жок",
+  "couldNotGetLocation": "Жайгашууну аныктоо мүмкүн болгон жок",
+  "photosSection": "Сүрөттөр",
+  "listingUpdated": "Жарнама жаңыланды!",
+  "listingCreated": "Жарнама түзүлдү!",
+  "couldNotDeleteImage": "Сүрөттү жок кылуу мүмкүн болгон жок",
+
+  "available": "Жеткиликтүү",
+  "blockedLabel": "Блокталган",
+  "pendingChangeLabel": "Күтүп жаткан өзгөртүү",
+  "availabilityUpdated": "Жеткиликтүүлүк жаңыланды",
+  "availabilityUnsavedHint": "{count, plural, =1{1 сакталбаган өзгөртүү — Сактоо баскычын басыңыз} other{{count} сакталбаган өзгөртүү — Сактоо баскычын басыңыз}}",
+  "@availabilityUnsavedHint": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "couldNotLoadAvailability": "Жеткиликтүүлүктү жүктөө мүмкүн болгон жок",
+  "couldNotSaveAvailability": "Жеткиликтүүлүктү сактоо мүмкүн болгон жок",
+  "chatNoMessages": "Азырынча кабарлар жок.\nСалам айтыңыз!",
+  "typeAMessage": "Кабар жазыңыз…",
+  "navListings": "Жарнамалар",
+  "navBookings": "Броньдор",
+  "logOutConfirm": "Чыгуу жөнүндө ишениңизби?",
+
+  "timeJustNow": "Азыр эле",
+  "timeMinutesAgo": "{count} мүн. мурун",
+  "@timeMinutesAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeHoursAgo": "{count} саат мурун",
+  "@timeHoursAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeDaysAgo": "{count} күн мурун",
+  "@timeDaysAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
   }
 }

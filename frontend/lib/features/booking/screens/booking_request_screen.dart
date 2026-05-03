@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/l10n/l10n_extension.dart';
 import '../../../core/models/app_exception.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/models/listing_model.dart';
@@ -73,18 +74,18 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       return (e.error as ServerException).message;
     }
     if (e is DioException && e.error is NetworkException) {
-      return 'Could not reach the server. Check your connection.';
+      return context.l10n.couldNotReachServer;
     }
-    return 'Something went wrong. Please try again.';
+    return context.l10n.somethingWentWrong;
   }
 
   Future<void> _submit() async {
     if (_checkIn == null || _checkOut == null) {
-      setState(() => _error = 'Please select check-in and check-out dates.');
+      setState(() => _error = context.l10n.pleaseSelectDates);
       return;
     }
     if (_nights < 1) {
-      setState(() => _error = 'Check-out must be at least 1 day after check-in.');
+      setState(() => _error = context.l10n.checkoutAfterCheckin);
       return;
     }
 
@@ -109,9 +110,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
       if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Booking request sent! The host will confirm shortly.'),
-        ),
+        SnackBar(content: Text(context.l10n.bookingRequestSent)),
       );
     } catch (e) {
       setState(() => _error = _errorMessage(e));
@@ -126,7 +125,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
     final priceLabel = listing.type == 'CAR' ? 'day' : 'night';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Request to Book')),
+      appBar: AppBar(title: Text(context.l10n.requestToBook)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -152,7 +151,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
             const Divider(height: 32),
 
             // Date pickers
-            Text('Dates',
+            Text(context.l10n.dates,
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall
@@ -162,7 +161,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
               children: [
                 Expanded(
                   child: _DateTile(
-                    label: 'Check-in',
+                    label: context.l10n.checkInLabel,
                     date: _checkIn,
                     onTap: () => _pickDate(isCheckIn: true),
                   ),
@@ -170,7 +169,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _DateTile(
-                    label: 'Check-out',
+                    label: context.l10n.checkOutLabel,
                     date: _checkOut,
                     onTap: () => _pickDate(isCheckIn: false),
                   ),
@@ -181,7 +180,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
             const SizedBox(height: 20),
 
             // Guest stepper
-            Text('Guests',
+            Text(context.l10n.guestsLabel,
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall
@@ -211,7 +210,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
             const SizedBox(height: 20),
 
             // Message
-            Text('Message to host (optional)',
+            Text(context.l10n.messageToHostOptional,
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall
@@ -221,9 +220,9 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
               controller: _messageController,
               maxLines: 3,
               maxLength: 500,
-              decoration: const InputDecoration(
-                hintText: 'Tell the host about your plans...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: context.l10n.messageToHostHint,
+                border: const OutlineInputBorder(),
               ),
             ),
 
@@ -235,7 +234,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '$_nights ${_nights == 1 ? priceLabel : '${priceLabel}s'}  ×  ${listing.currency} ${listing.pricePerUnit.toStringAsFixed(0)}',
+                    '${listing.type == 'CAR' ? context.l10n.dayCount(_nights) : context.l10n.nightCount(_nights)}  ×  ${listing.currency} ${listing.pricePerUnit.toStringAsFixed(0)}',
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   Text(
@@ -278,7 +277,7 @@ class _BookingRequestScreenState extends ConsumerState<BookingRequestScreen> {
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Request to Book'),
+                    : Text(context.l10n.requestToBook),
               ),
             ),
           ],
@@ -322,7 +321,7 @@ class _DateTile extends StatelessWidget {
             Text(
               date != null
                   ? '${date!.day}/${date!.month}/${date!.year}'
-                  : 'Select',
+                  : context.l10n.selectDate,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: date != null ? kDark : kGrey,
                     fontWeight:

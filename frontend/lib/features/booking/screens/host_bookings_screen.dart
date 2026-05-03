@@ -111,7 +111,7 @@ class _HostBookingCardState extends ConsumerState<_HostBookingCard> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.confirm}: $e')),
+          SnackBar(content: Text(context.l10n.somethingWentWrong)),
         );
       }
     } finally {

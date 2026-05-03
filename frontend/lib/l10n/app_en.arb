@@ -133,5 +133,100 @@
     "placeholders": {
       "count": { "type": "int" }
     }
+  },
+
+  "logInToContinue": "Log in to continue",
+  "enterValidEmail": "Enter a valid email",
+  "passwordMinLength": "Password must be at least 8 chars",
+  "or": "or",
+  "continueWithGoogle": "Continue with Google",
+  "continueWithApple": "Continue with Apple",
+  "googleSignInFailed": "Google sign-in failed",
+  "appleSignInFailed": "Apple sign-in failed",
+  "loginFailed": "Login failed. Try again.",
+  "registrationFailed": "Registration failed. Try again.",
+  "required": "Required",
+  "mustBeNumber": "Must be a number",
+  "filtersTooltip": "Filters",
+
+  "requestToBook": "Request to Book",
+  "dates": "Dates",
+  "checkInLabel": "Check-in",
+  "checkOutLabel": "Check-out",
+  "guestsLabel": "Guests",
+  "messageToHostOptional": "Message to host (optional)",
+  "messageToHostHint": "Tell the host about your plans...",
+  "selectDate": "Select",
+  "dayCount": "{count, plural, =1{1 day} other{{count} days}}",
+  "@dayCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "bookingRequestSent": "Booking request sent! The host will confirm shortly.",
+  "pleaseSelectDates": "Please select check-in and check-out dates.",
+  "checkoutAfterCheckin": "Check-out must be at least 1 day after check-in.",
+  "couldNotReachServer": "Could not reach the server. Check your connection.",
+  "somethingWentWrong": "Something went wrong. Please try again.",
+
+  "editListing": "Edit Listing",
+  "newListing": "New Listing",
+  "typeSectionLabel": "Type",
+  "basicInfo": "Basic info",
+  "titleFieldLabel": "Title",
+  "descriptionFieldLabel": "Description",
+  "pricingSection": "Pricing",
+  "pricePerNightDay": "Price per night/day",
+  "currencyLabel": "Currency",
+  "maxGuestsOptional": "Max guests (optional)",
+  "locationSection": "Location",
+  "streetAddress": "Street address",
+  "cityLabel": "City",
+  "latitudeLabel": "Latitude",
+  "longitudeLabel": "Longitude",
+  "useMyLocation": "Use my location",
+  "locationPermissionDenied": "Location permission denied",
+  "couldNotGetLocation": "Could not get location",
+  "photosSection": "Photos",
+  "listingUpdated": "Listing updated!",
+  "listingCreated": "Listing created!",
+  "couldNotDeleteImage": "Could not delete image",
+
+  "available": "Available",
+  "blockedLabel": "Blocked",
+  "pendingChangeLabel": "Pending change",
+  "availabilityUpdated": "Availability updated",
+  "availabilityUnsavedHint": "{count, plural, =1{1 unsaved change — tap Save} other{{count} unsaved changes — tap Save}}",
+  "@availabilityUnsavedHint": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "couldNotLoadAvailability": "Could not load availability",
+  "couldNotSaveAvailability": "Could not save availability",
+  "chatNoMessages": "No messages yet.\nSay hello!",
+  "typeAMessage": "Type a message…",
+  "navListings": "Listings",
+  "navBookings": "Bookings",
+  "logOutConfirm": "Are you sure you want to log out?",
+
+  "timeJustNow": "Just now",
+  "timeMinutesAgo": "{count}m ago",
+  "@timeMinutesAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeHoursAgo": "{count}h ago",
+  "@timeHoursAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "timeDaysAgo": "{count}d ago",
+  "@timeDaysAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
   }
 }

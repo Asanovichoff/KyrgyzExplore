@@ -25,6 +25,12 @@ public class UserService {
     @Value("${stripe.publishable-key}")
     private String publishableKey; // unused here but confirms Stripe is configured
 
+    @Value("${stripe.connect.refresh-url}")
+    private String stripeConnectRefreshUrl;
+
+    @Value("${stripe.connect.return-url}")
+    private String stripeConnectReturnUrl;
+
     /**
      * Creates a Stripe Connect Express account for the host (or retrieves an existing one)
      * and returns a one-time onboarding URL the host must visit to complete their Stripe profile.
@@ -60,9 +66,8 @@ public class UserService {
             AccountLink link = AccountLink.create(AccountLinkCreateParams.builder()
                     .setAccount(accountId)
                     .setType(AccountLinkCreateParams.Type.ACCOUNT_ONBOARDING)
-                    // TODO: replace with real frontend URLs in production
-                    .setRefreshUrl("https://kyrgyzexplore.com/host/connect/refresh")
-                    .setReturnUrl("https://kyrgyzexplore.com/host/connect/complete")
+                    .setRefreshUrl(stripeConnectRefreshUrl)
+                    .setReturnUrl(stripeConnectReturnUrl)
                     .build());
 
             return link.getUrl();

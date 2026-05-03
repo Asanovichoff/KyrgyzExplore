@@ -753,6 +753,396 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 booking} other{{count} bookings}}'**
   String bookingCount(int count);
+
+  /// No description provided for @logInToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in to continue'**
+  String get logInToContinue;
+
+  /// No description provided for @enterValidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email'**
+  String get enterValidEmail;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 chars'**
+  String get passwordMinLength;
+
+  /// No description provided for @or.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get or;
+
+  /// No description provided for @continueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get continueWithGoogle;
+
+  /// No description provided for @continueWithApple.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Apple'**
+  String get continueWithApple;
+
+  /// No description provided for @googleSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in failed'**
+  String get googleSignInFailed;
+
+  /// No description provided for @appleSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple sign-in failed'**
+  String get appleSignInFailed;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed. Try again.'**
+  String get loginFailed;
+
+  /// No description provided for @registrationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed. Try again.'**
+  String get registrationFailed;
+
+  /// No description provided for @required.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get required;
+
+  /// No description provided for @mustBeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be a number'**
+  String get mustBeNumber;
+
+  /// No description provided for @filtersTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filtersTooltip;
+
+  /// No description provided for @requestToBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Request to Book'**
+  String get requestToBook;
+
+  /// No description provided for @dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get dates;
+
+  /// No description provided for @checkInLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in'**
+  String get checkInLabel;
+
+  /// No description provided for @checkOutLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-out'**
+  String get checkOutLabel;
+
+  /// No description provided for @guestsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests'**
+  String get guestsLabel;
+
+  /// No description provided for @messageToHostOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Message to host (optional)'**
+  String get messageToHostOptional;
+
+  /// No description provided for @messageToHostHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell the host about your plans...'**
+  String get messageToHostHint;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get selectDate;
+
+  /// No description provided for @dayCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String dayCount(int count);
+
+  /// No description provided for @bookingRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking request sent! The host will confirm shortly.'**
+  String get bookingRequestSent;
+
+  /// No description provided for @pleaseSelectDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select check-in and check-out dates.'**
+  String get pleaseSelectDates;
+
+  /// No description provided for @checkoutAfterCheckin.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-out must be at least 1 day after check-in.'**
+  String get checkoutAfterCheckin;
+
+  /// No description provided for @couldNotReachServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server. Check your connection.'**
+  String get couldNotReachServer;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get somethingWentWrong;
+
+  /// No description provided for @editListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Listing'**
+  String get editListing;
+
+  /// No description provided for @newListing.
+  ///
+  /// In en, this message translates to:
+  /// **'New Listing'**
+  String get newListing;
+
+  /// No description provided for @typeSectionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get typeSectionLabel;
+
+  /// No description provided for @basicInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic info'**
+  String get basicInfo;
+
+  /// No description provided for @titleFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get titleFieldLabel;
+
+  /// No description provided for @descriptionFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get descriptionFieldLabel;
+
+  /// No description provided for @pricingSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pricing'**
+  String get pricingSection;
+
+  /// No description provided for @pricePerNightDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Price per night/day'**
+  String get pricePerNightDay;
+
+  /// No description provided for @currencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get currencyLabel;
+
+  /// No description provided for @maxGuestsOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Max guests (optional)'**
+  String get maxGuestsOptional;
+
+  /// No description provided for @locationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationSection;
+
+  /// No description provided for @streetAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Street address'**
+  String get streetAddress;
+
+  /// No description provided for @cityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get cityLabel;
+
+  /// No description provided for @latitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get latitudeLabel;
+
+  /// No description provided for @longitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get longitudeLabel;
+
+  /// No description provided for @useMyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get useMyLocation;
+
+  /// No description provided for @locationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission denied'**
+  String get locationPermissionDenied;
+
+  /// No description provided for @couldNotGetLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get location'**
+  String get couldNotGetLocation;
+
+  /// No description provided for @photosSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get photosSection;
+
+  /// No description provided for @listingUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing updated!'**
+  String get listingUpdated;
+
+  /// No description provided for @listingCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing created!'**
+  String get listingCreated;
+
+  /// No description provided for @couldNotDeleteImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete image'**
+  String get couldNotDeleteImage;
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @blockedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get blockedLabel;
+
+  /// No description provided for @pendingChangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending change'**
+  String get pendingChangeLabel;
+
+  /// No description provided for @availabilityUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability updated'**
+  String get availabilityUpdated;
+
+  /// No description provided for @availabilityUnsavedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unsaved change — tap Save} other{{count} unsaved changes — tap Save}}'**
+  String availabilityUnsavedHint(int count);
+
+  /// No description provided for @couldNotLoadAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load availability'**
+  String get couldNotLoadAvailability;
+
+  /// No description provided for @couldNotSaveAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save availability'**
+  String get couldNotSaveAvailability;
+
+  /// No description provided for @chatNoMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet.\nSay hello!'**
+  String get chatNoMessages;
+
+  /// No description provided for @typeAMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message…'**
+  String get typeAMessage;
+
+  /// No description provided for @navListings.
+  ///
+  /// In en, this message translates to:
+  /// **'Listings'**
+  String get navListings;
+
+  /// No description provided for @navBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get navBookings;
+
+  /// No description provided for @logOutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get logOutConfirm;
+
+  /// No description provided for @timeJustNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get timeJustNow;
+
+  /// No description provided for @timeMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String timeMinutesAgo(int count);
+
+  /// No description provided for @timeHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String timeHoursAgo(int count);
+
+  /// No description provided for @timeDaysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String timeDaysAgo(int count);
 }
 
 class _AppLocalizationsDelegate
